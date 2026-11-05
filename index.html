@@ -170,6 +170,39 @@ section.view.on{display:block}
 .legend{display:flex;align-items:center;gap:4px;justify-content:flex-end;font-size:11px;color:var(--dim);margin-top:10px}
 .legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
 
+/* ── ride ── */
+.ride-row{display:grid;grid-template-columns:60px 1fr auto;gap:12px;align-items:center;width:100%;text-align:left;padding:12px 0;border-top:1px solid var(--line)}
+.month-h + .ride-row{border-top:0}
+.month-h{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:700;padding:14px 0 4px}
+.month-h:first-child{padding-top:0}
+.ride-row .dt{font-family:var(--num);line-height:1.15}
+.ride-row .dt b{display:block;font-size:22px;font-weight:600}
+.ride-row .dt small{font-size:11px;color:var(--muted)}
+.ride-row .km{font-family:var(--num);font-size:28px;font-weight:600;line-height:1}
+.ride-row .km small{font-size:13px;color:var(--muted);margin-left:2px}
+.ride-row .meta{font-size:12px;color:var(--muted);font-family:var(--num);margin-top:2px}
+.z2chip{font-family:var(--num);font-weight:700;font-size:20px;line-height:1;border-radius:10px;padding:6px 8px;background:rgba(61,220,151,.14);color:var(--sober);text-align:center;min-width:58px}
+.z2chip small{font-size:11px}
+.z2chip small:last-child{display:block;font-size:9px;font-weight:700;opacity:.85;margin-top:3px;font-family:-apple-system,'Hiragino Sans',sans-serif}
+.backbtn{display:flex;align-items:center;gap:4px;height:40px;padding:0 12px 0 6px;border-radius:12px;background:var(--surface);font-weight:700;font-size:14px;margin-bottom:8px;box-shadow:var(--shadow)}
+.backbtn svg{width:20px;height:20px}
+.ride-title{font-size:15px;color:var(--muted);font-weight:700;margin:4px 2px 10px;display:flex;align-items:center;gap:6px}
+.ride-title .num{font-size:24px;color:var(--text)}
+.tag{font-size:11px;font-weight:800;background:var(--surface2);color:var(--muted);border-radius:6px;padding:2px 7px}
+.bigpct{font-family:var(--num);font-size:60px;font-weight:700;line-height:1;color:var(--sober)}
+.zbar{display:flex;height:12px;border-radius:6px;overflow:hidden;margin:12px 0 8px;background:var(--surface2)}
+.zrow{display:grid;grid-template-columns:10px 1fr auto 52px 40px;gap:8px;align-items:center;font-size:13px;padding:5px 0}
+.zrow i{width:10px;height:10px;border-radius:3px}
+.zrow .rng{color:var(--dim);font-size:13px}
+.zrow .num{text-align:right;font-size:16px}
+.zrow .pct{color:var(--muted)}
+#rideMap{height:300px;border-radius:12px;overflow:hidden;background:var(--surface2);z-index:0}
+.leaflet-container{background:var(--surface2)!important;font:12px/1.4 -apple-system,sans-serif}
+:root[data-theme="dark"] .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.85) contrast(.9) saturate(.6)}
+.chart-t{font-size:12px;color:var(--muted);font-weight:700;margin-top:10px;display:flex;gap:6px}
+.chart-t span{color:var(--dim);font-weight:600}
+.chart{height:130px}
+
 /* ── settings ── */
 .srow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
 .srow:first-of-type{border-top:0}
@@ -290,13 +323,7 @@ section.view.on{display:block}
   </section>
 
   <!-- ライド -->
-  <section class="view" id="v-ride">
-    <div class="card placeholder">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M15 6h2l3 11M5.5 17l4-8h7M9 6h3l3.5 11"/></svg>
-      <div style="font-weight:700;color:var(--text)">ライドログは段階2で追加します</div>
-      <div style="font-size:13px">FITファイルの取り込み・地図・心拍ゾーン・Z2達成率</div>
-    </div>
-  </section>
+  <section class="view" id="v-ride"></section>
 
   <!-- 設定 -->
   <section class="view" id="v-set">
@@ -309,6 +336,11 @@ section.view.on{display:block}
       <h2><span class="dot" style="background:var(--strength)"></span>筋トレメニュー</h2>
       <div id="exSettings"></div>
       <button class="btn ghost" id="exAdd" style="margin-top:8px">＋ 種目を追加</button>
+    </div>
+    <div class="card">
+      <h2><span class="dot" style="background:var(--ride)"></span>ライド</h2>
+      <div class="srow"><div class="nm">プライバシーゾーン<small>出発・到着地点の周囲を地図に表示・保存しない（取り込み時に適用）</small></div>
+        <div class="mini" id="privMini"><button data-d="-100">−</button><div class="v"></div><button data-d="100">＋</button></div></div>
     </div>
     <div class="card">
       <h2>表示テーマ</h2>
@@ -366,10 +398,11 @@ import {
 } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
 import {
   initializeFirestore, persistentLocalCache, persistentMultipleTabManager, connectFirestoreEmulator,
-  doc, setDoc, collection, query, where, onSnapshot, deleteField, serverTimestamp,
+  doc, setDoc, getDoc, collection, query, where, onSnapshot, deleteField, serverTimestamp,
+  writeBatch, arrayUnion, arrayRemove,
 } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
 
-const VERSION = 'v1.1.0（段階1＋表示テーマ）';
+const VERSION = 'v1.2.0（段階2：ライドログ）';
 
 // localhost で ?emu を付けて開くとFirebaseエミュレータに接続（開発用）
 const USE_EMU = ['localhost','127.0.0.1'].includes(location.hostname) && new URLSearchParams(location.search).has('emu');
@@ -398,7 +431,7 @@ const DEFAULT_EXERCISES = [
   { id:'plank',     name:'プランク',       type:'time', sides:false, setsMin:3, setsMax:3, target:45, targetMax:60, on:true },
   { id:'sideplank', name:'サイドプランク', type:'time', sides:true,  setsMin:2, setsMax:2, target:30, targetMax:30, on:true },
 ];
-const DEFAULT_SETTINGS = { maxHR:182, zones:[109,138,155,168], exercises:DEFAULT_EXERCISES };
+const DEFAULT_SETTINGS = { maxHR:182, zones:[109,138,155,168], exercises:DEFAULT_EXERCISES, privacyM:500 };
 const BODY_FIELDS = [
   { key:'weight', name:'体重',     unit:'kg', def:65.0, min:30, max:150 },
   { key:'fat',    name:'体脂肪率', unit:'%',  def:20.0, min:3,  max:60 },
@@ -449,8 +482,11 @@ const S = {
   exVal: {},             // exId -> 現在のステッパー値
   heatMode: 'all',
   editEx: null,
+  rides: {},             // ライド要約 id -> data
+  rideOpen: null,        // 詳細表示中のライド
+  rideCache: {},         // 時系列データ
 };
-let unsubDays = null, unsubSet = null;
+let unsubDays = null, unsubSet = null, unsubRides = null;
 
 const dayRef = date => doc(db, 'users', S.uid, 'days', date);
 const setRef = () => doc(db, 'users', S.uid, 'settings', 'main');
@@ -482,7 +518,7 @@ $('emailForm').onsubmit = e => { e.preventDefault(); $('authErr').textContent=''
 $('btnSignup').onclick = () => { $('authErr').textContent=''; createUserWithEmailAndPassword(auth, $('email').value.trim(), $('pass').value).catch(authErr); };
 $('btnLogout').onclick = () => signOut(auth);
 
-function stopApp() { unsubDays?.(); unsubSet?.(); unsubDays = unsubSet = null; S.days = {}; S.uid = null; }
+function stopApp() { unsubDays?.(); unsubSet?.(); unsubRides?.(); unsubDays = unsubSet = unsubRides = null; S.days = {}; S.rides = {}; S.rideCache = {}; S.rideOpen = null; S.uid = null; }
 
 function startApp() {
   $('auth').classList.add('hidden'); $('app').classList.remove('hidden'); $('tabs').classList.remove('hidden');
@@ -495,6 +531,10 @@ function startApp() {
     });
     render();
   }, e => { console.error(e); toast('データを読み込めませんでした'); });
+  unsubRides = onSnapshot(collection(db,'users',S.uid,'rides'), snap => {
+    snap.docChanges().forEach(ch => { if (ch.type === 'removed') delete S.rides[ch.doc.id]; else S.rides[ch.doc.id] = ch.doc.data(); });
+    render();
+  }, e => console.error(e));
   unsubSet = onSnapshot(setRef(), snap => {
     const d = snap.data();
     S.settings = { ...structuredClone(DEFAULT_SETTINGS), ...(d||{}) };
@@ -508,6 +548,7 @@ function startApp() {
 // ═══════════════════════════════════════════════
 document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => go(b.dataset.v));
 function go(v) {
+  if (v === 'ride' || S.view === 'ride') { S.rideOpen = null; S._rideShown = null; disposeRideViz(); }   // ライドタブは常に一覧から
   S.view = v;
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
   document.querySelectorAll('section.view').forEach(s => s.classList.toggle('on', s.id === 'v-'+v));
@@ -526,6 +567,7 @@ function render() {
   if (S.view === 'home') renderHome();
   if (S.view === 'log') renderLog();
   if (S.view === 'set') renderSettings();
+  if (S.view === 'ride') renderRides();
   document.querySelectorAll('section.view').forEach(s => s.classList.toggle('on', s.id === 'v-'+S.view));
 }
 
@@ -703,6 +745,7 @@ function bestStreak(test) {
 }
 function rangeStats(from, to) {
   let strengthDays=0, sets=0, sober=0, drink=0, bodyDays=0;
+  const rs = ridesOf(from, to), rides = rs.length, rideKm = rs.reduce((n, r) => n + r.distance, 0) / 1000;
   for (let d = from; d <= to; d = addDays(d,1)) {
     const x = S.days[d]; if (!x) continue;
     if (hasStrength(x)) strengthDays++;
@@ -711,7 +754,7 @@ function rangeStats(from, to) {
     if (x.alcohol === true) drink++;
     if (x.weight != null) bodyDays++;
   }
-  return { strengthDays, sets, sober, drink, bodyDays };
+  return { strengthDays, sets, sober, drink, bodyDays, rides, rideKm };
 }
 
 function renderHome() {
@@ -757,7 +800,8 @@ function renderHome() {
     ${row('セット数', s=>s.sets, '')}
     ${row('休肝日', s=>s.sober, '日')}
     ${row('飲酒', s=>s.drink, '日')}
-    ${row('ライド', ()=>'—', '')}
+    ${row('ライド', s=>s.rides, '回')}
+    ${row('距離', s=>Math.round(s.rideKm), 'km')}
   </tbody>`;
 
   renderHeat();
@@ -767,6 +811,7 @@ const HEAT_MODES = [
   { id:'all',      label:'総合',   c:'var(--accent)',   rgb:'200,245,96',  rgbL:'110,160,0' },
   { id:'strength', label:'筋トレ', c:'var(--strength)', rgb:'255,138,76',  rgbL:'229,100,42' },
   { id:'sober',    label:'休肝日', c:'var(--sober)',    rgb:'61,220,151',  rgbL:'16,164,104' },
+  { id:'ride',     label:'ライド', c:'var(--ride)',     rgb:'79,209,232',  rgbL:'14,159,187' },
   { id:'body',     label:'体組成', c:'var(--body)',     rgb:'169,139,255', rgbL:'118,86,227' },
 ];
 function heatLevel(mode, x) {
@@ -774,6 +819,7 @@ function heatLevel(mode, x) {
   if (mode === 'strength') { const n = setCount(x); return n === 0 ? 0 : n < 5 ? 1 : n < 10 ? 2 : n < 13 ? 3 : 4; }
   if (mode === 'sober') return x.alcohol === false ? 4 : x.alcohol === true ? -1 : 0;
   if (mode === 'body') return x.weight != null ? 4 : 0;
+  if (mode === 'ride') { const k = dayKm(x); return !hasRide(x) ? 0 : k < 20 ? 1 : k < 40 ? 2 : k < 60 ? 3 : 4; }
   // 総合：達成した項目の数
   return (hasStrength(x)?1:0) + (x.alcohol===false?1:0) + (x.weight!=null?1:0) + (hasRide(x)?1:0);
 }
@@ -835,11 +881,22 @@ function renderSettings() {
     queueSettingsSave(true);
   })));
   renderExSettings();
+  const pm = $('privMini');
+  pm.querySelector('.v').textContent = (S.settings.privacyM ?? 500) + 'm';
+  pm.querySelectorAll('button').forEach(b => { b.onpointerdown = null; });
+  if (!pm.dataset.bound) {
+    pm.dataset.bound = '1';
+    pm.querySelectorAll('button').forEach(b => holdRepeat(b, () => {
+      S.settings.privacyM = Math.min(2000, Math.max(0, (S.settings.privacyM ?? 500) + Number(b.dataset.d)));
+      pm.querySelector('.v').textContent = S.settings.privacyM + 'm';
+      queueSettingsSave();
+    }));
+  }
 }
 let setT;
 function queueSettingsSave(rerender) {
   clearTimeout(setT);
-  setT = setTimeout(() => { saveSettings({ maxHR:S.settings.maxHR, zones:S.settings.zones, exercises:S.settings.exercises }); if (rerender) renderSettings(); }, 700);
+  setT = setTimeout(() => { saveSettings({ maxHR:S.settings.maxHR, zones:S.settings.zones, exercises:S.settings.exercises, privacyM:S.settings.privacyM ?? 500 }); if (rerender) renderSettings(); }, 700);
 }
 
 function renderExSettings() {
@@ -902,6 +959,456 @@ $('exAdd').onclick = () => {
   S.editEx = S.settings.exercises.length - 1;
   queueSettingsSave(); renderExSettings();
 };
+
+// ═══════════════════════════════════════════════
+//  ライド：FIT解析（外部ライブラリなし）
+// ═══════════════════════════════════════════════
+const FIT_EPOCH = 631065600;   // 1989-12-31T00:00:00Z
+const SEMI = 180 / 2147483648;
+// base type -> [size, reader, invalid]
+const FIT_BT = {
+  0x00:[1,'u8',0xFF], 0x01:[1,'s8',0x7F], 0x02:[1,'u8',0xFF], 0x83:[2,'s16',0x7FFF], 0x84:[2,'u16',0xFFFF],
+  0x85:[4,'s32',0x7FFFFFFF], 0x86:[4,'u32',0xFFFFFFFF], 0x88:[4,'f32',null], 0x89:[8,'f64',null],
+  0x0A:[1,'u8',0x00], 0x8B:[2,'u16',0x0000], 0x8C:[4,'u32',0x00000000], 0x0D:[1,'u8',0xFF],
+};
+// 必要なメッセージ・フィールドだけ取り出す
+const FIT_WANT = {
+  20: { 253:'ts', 0:'lat', 1:'lng', 2:'alt', 78:'ealt', 3:'hr', 4:'cad', 5:'dist', 6:'spd', 73:'espd', 7:'pwr', 13:'tmp' },  // record
+  18: { 253:'ts', 2:'start', 5:'sport', 6:'sub', 7:'elapsed', 8:'timer', 9:'dist', 11:'kcal', 22:'ascent', 16:'avgHr', 17:'maxHr', 18:'avgCad', 20:'avgPwr', 15:'maxSpd', 124:'emaxSpd' }, // session
+  0:  { 1:'manuf', 2:'product', 4:'created' },  // file_id
+};
+
+function parseFit(buf) {
+  const dv = new DataView(buf);
+  const hs = dv.getUint8(0);
+  if (String.fromCharCode(dv.getUint8(8), dv.getUint8(9), dv.getUint8(10), dv.getUint8(11)) !== '.FIT') throw new Error('FITファイルではありません');
+  const end = Math.min(hs + dv.getUint32(4, true), buf.byteLength);
+  const defs = {}, out = { records:[], sessions:[], fileId:null };
+  let p = hs, lastTs = 0;
+  const rd = (type, off, le) => {
+    switch (type) {
+      case 'u8': return dv.getUint8(off); case 's8': return dv.getInt8(off);
+      case 'u16': return dv.getUint16(off, le); case 's16': return dv.getInt16(off, le);
+      case 'u32': return dv.getUint32(off, le); case 's32': return dv.getInt32(off, le);
+      case 'f32': return dv.getFloat32(off, le); case 'f64': return dv.getFloat64(off, le);
+    }
+  };
+  while (p < end) {
+    const h = dv.getUint8(p++);
+    let local, tsOverride = null;
+    if (h & 0x80) {                       // 圧縮タイムスタンプ付きデータ
+      local = (h >> 5) & 3;
+      const off = h & 0x1F;
+      let ts = (lastTs & ~0x1F) + off;
+      if (off < (lastTs & 0x1F)) ts += 0x20;
+      tsOverride = ts; lastTs = ts;
+    } else if (h & 0x40) {                // 定義メッセージ
+      local = h & 0x0F;
+      const le = dv.getUint8(p + 1) === 0;
+      const gnum = dv.getUint16(p + 2, le);
+      const nf = dv.getUint8(p + 4);
+      p += 5;
+      const fields = [];
+      for (let i = 0; i < nf; i++, p += 3) fields.push({ num:dv.getUint8(p), size:dv.getUint8(p+1), bt:dv.getUint8(p+2) });
+      let devSize = 0;
+      if (h & 0x20) { const nd = dv.getUint8(p++); for (let i = 0; i < nd; i++, p += 3) devSize += dv.getUint8(p+1); }
+      defs[local] = { le, gnum, fields, devSize };
+      continue;
+    } else {
+      local = h & 0x0F;
+    }
+    const d = defs[local];
+    if (!d) throw new Error('FITの形式を読み取れませんでした');
+    const want = FIT_WANT[d.gnum];
+    const m = want ? {} : null;
+    for (const f of d.fields) {
+      if (want && want[f.num] !== undefined) {
+        const bt = FIT_BT[f.bt];
+        if (bt && f.size === bt[0]) {
+          const v = rd(bt[1], p, d.le);
+          if (v !== bt[2] && !(bt[1][0] === 'f' && !isFinite(v))) m[want[f.num]] = v;
+        }
+      }
+      if (f.num === 253 && f.size === 4) { const v = dv.getUint32(p, d.le); if (v !== 0xFFFFFFFF) lastTs = v; }
+      p += f.size;
+    }
+    p += d.devSize;
+    if (!m) continue;
+    if (tsOverride !== null && m.ts === undefined) m.ts = tsOverride;
+    if (d.gnum === 20) out.records.push(m);
+    else if (d.gnum === 18) out.sessions.push(m);
+    else if (d.gnum === 0 && !out.fileId) out.fileId = m;
+  }
+  return out;
+}
+
+// ZIP（Garmin Connectの「オリジナルをエクスポート」）から .fit を取り出す
+async function unzipFits(buf) {
+  const dv = new DataView(buf), u8 = new Uint8Array(buf);
+  let e = -1;
+  for (let i = buf.byteLength - 22; i >= Math.max(0, buf.byteLength - 65557); i--) if (dv.getUint32(i, true) === 0x06054b50) { e = i; break; }
+  if (e < 0) throw new Error('ZIPを読み取れませんでした');
+  const n = dv.getUint16(e + 10, true);
+  let p = dv.getUint32(e + 16, true);
+  const res = [];
+  for (let i = 0; i < n; i++) {
+    const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true);
+    const nl = dv.getUint16(p + 28, true), xl = dv.getUint16(p + 30, true), cl = dv.getUint16(p + 32, true);
+    const lho = dv.getUint32(p + 42, true);
+    const name = new TextDecoder().decode(u8.subarray(p + 46, p + 46 + nl));
+    p += 46 + nl + xl + cl;
+    if (!/\.fit$/i.test(name)) continue;
+    const start = lho + 30 + dv.getUint16(lho + 26, true) + dv.getUint16(lho + 28, true);
+    const data = u8.slice(start, start + csize);
+    if (method === 0) res.push({ name, buf:data.buffer });
+    else if (method === 8) {
+      const ds = new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+      res.push({ name, buf: await new Response(ds).arrayBuffer() });
+    }
+  }
+  return res;
+}
+
+const hav = (a, b, c, d) => {
+  const R = 6371000, r = Math.PI / 180;
+  const x = Math.sin((c - a) * r / 2) ** 2 + Math.cos(a * r) * Math.cos(c * r) * Math.sin((d - b) * r / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(x));
+};
+
+// 解析：要約・ゾーン・ドリフト・保存用の間引きデータ
+function analyzeRide(fit, opt) {
+  const { zones, privacyM } = opt;
+  const recs = fit.records.filter(r => r.ts != null).sort((a, b) => a.ts - b.ts);
+  if (recs.length < 10) throw new Error('記録が少なすぎます');
+  const s = fit.sessions[0] || {};
+  const t0 = recs[0].ts;
+  const pts = recs.map(r => ({
+    t: r.ts - t0,
+    lat: r.lat != null && r.lng != null && r.lat !== 0 ? r.lat * SEMI : null,
+    lng: r.lat != null && r.lng != null && r.lat !== 0 ? r.lng * SEMI : null,
+    alt: r.ealt != null ? r.ealt / 5 - 500 : r.alt != null ? r.alt / 5 - 500 : null,
+    hr: r.hr ?? null, cad: r.cad ?? null,
+    dist: r.dist != null ? r.dist / 100 : null,
+    spd: r.espd != null ? r.espd / 1000 : r.spd != null ? r.spd / 1000 : null,
+    pwr: r.pwr ?? null, tmp: r.tmp ?? null,
+  }));
+  // 時間で重みづけ（次の点までの秒数。30秒超の間隔は停止とみなし除外）
+  const zt = [0, 0, 0, 0, 0];
+  let hrT = 0, hrSum = 0, hrMax = 0, cadT = 0, cadSum = 0, tmpT = 0, tmpSum = 0, tmpMin = 99, tmpMax = -99, pwrT = 0, pwrSum = 0, spdMax = 0;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], dt = pts[i+1].t - a.t;
+    if (dt <= 0 || dt > 30) continue;
+    if (a.hr) { zt[zones.filter(z => a.hr > z).length] += dt; hrT += dt; hrSum += a.hr * dt; }
+    if (a.cad) { cadT += dt; cadSum += a.cad * dt; }     // ケイデンスは0（惰性）を除いた平均
+    if (a.tmp != null) { tmpT += dt; tmpSum += a.tmp * dt; }
+    if (a.pwr != null) { pwrT += dt; pwrSum += a.pwr * dt; }
+  }
+  for (const a of pts) {
+    if (a.hr) hrMax = Math.max(hrMax, a.hr);
+    if (a.tmp != null) { tmpMin = Math.min(tmpMin, a.tmp); tmpMax = Math.max(tmpMax, a.tmp); }
+    if (a.spd != null) spdMax = Math.max(spdMax, a.spd);
+  }
+  // 心拍ドリフト（速度/心拍、前半と後半の比較）
+  const mv = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], dt = pts[i+1].t - a.t;
+    if (dt > 0 && dt <= 30 && a.hr && a.spd != null && a.spd > 2) mv.push({ dt, hr:a.hr, spd:a.spd });
+  }
+  let drift = null;
+  const mvT = mv.reduce((n, x) => n + x.dt, 0);
+  if (mvT > 1200) {
+    let acc = 0; const h = [[0,0,0],[0,0,0]];
+    for (const x of mv) { const k = acc < mvT / 2 ? 0 : 1; h[k][0] += x.dt; h[k][1] += x.spd * x.dt; h[k][2] += x.hr * x.dt; acc += x.dt; }
+    const ef = h.map(([t, sp, hr]) => (sp / t) / (hr / t));
+    drift = Math.round((ef[0] - ef[1]) / ef[0] * 1000) / 10;
+  }
+  // 獲得標高（セッション値がなければ記録から計算）
+  let ascent = s.ascent ?? null;
+  if (ascent == null) { let up = 0, last = null; for (const a of pts) if (a.alt != null) { if (last != null && a.alt - last > 0.5) up += a.alt - last; if (last == null || Math.abs(a.alt - last) > 0.5) last = a.alt; } ascent = Math.round(up); }
+  const lastDist = [...pts].reverse().find(a => a.dist != null)?.dist;
+  const distance = s.dist != null ? s.dist / 100 : (lastDist ?? 0);
+  const moving = s.timer != null ? s.timer / 1000 : hrT;
+  const hasGps = pts.some(a => a.lat != null);
+  // 保存用：5秒以上の間隔に間引き
+  const keep = [];
+  for (const a of pts) if (!keep.length || a.t - keep[keep.length-1].t >= 5) keep.push(a);
+  const r1 = v => v == null ? null : Math.round(v * 10) / 10;
+  const streams = {
+    t: keep.map(a => a.t),
+    d: keep.map(a => a.dist == null ? null : Math.round(a.dist) ),
+    hr: keep.map(a => a.hr), cad: keep.map(a => a.cad),
+    spd: keep.map(a => a.spd == null ? null : r1(a.spd * 3.6)),
+    alt: keep.map(a => r1(a.alt)), tmp: keep.map(a => a.tmp),
+  };
+  if (pts.some(a => a.pwr != null)) streams.pwr = keep.map(a => a.pwr);
+  // ルート：プライバシーゾーン（出発・到着地点の周囲）を除いて保存
+  let route = null;
+  if (hasGps) {
+    const g = pts.filter(a => a.lat != null);
+    const A = g[0], B = g[g.length-1];
+    const lat = [], lng = [], hr = [];
+    let prev = null;
+    for (const a of g) {
+      if (privacyM > 0 && (hav(A.lat, A.lng, a.lat, a.lng) < privacyM || hav(B.lat, B.lng, a.lat, a.lng) < privacyM)) { prev = null; lat.push(null); lng.push(null); hr.push(null); continue; }
+      if (prev && hav(prev.lat, prev.lng, a.lat, a.lng) < 15) continue;   // 15m未満の移動は間引く
+      lat.push(Math.round(a.lat * 1e5) / 1e5); lng.push(Math.round(a.lng * 1e5) / 1e5); hr.push(a.hr);
+      prev = a;
+    }
+    // 連続するnull（区切り）を1つにまとめ、先頭・末尾のnullを除く
+    const L = [], G = [], H = [];
+    lat.forEach((v, i) => { if (v == null && (L.length === 0 || L[L.length-1] == null)) return; L.push(v); G.push(lng[i]); H.push(hr[i]); });
+    while (L.length && L[L.length-1] == null) { L.pop(); G.pop(); H.pop(); }
+    route = { lat:L, lng:G, hr:H };
+  }
+  const start = (s.start ?? recs[0].ts) + FIT_EPOCH;
+  const sd = new Date(start * 1000);
+  const pad = n => String(n).padStart(2, '0');
+  return {
+    id: `${sd.getUTCFullYear()}${pad(sd.getUTCMonth()+1)}${pad(sd.getUTCDate())}T${pad(sd.getUTCHours())}${pad(sd.getUTCMinutes())}${pad(sd.getUTCSeconds())}`,
+    summary: {
+      start: start * 1000,
+      date: `${sd.getFullYear()}-${pad(sd.getMonth()+1)}-${pad(sd.getDate())}`,
+      indoor: !hasGps || s.sub === 6 || s.sub === 58,
+      distance: Math.round(distance),
+      elapsed: Math.round(s.elapsed != null ? s.elapsed / 1000 : pts[pts.length-1].t),
+      moving: Math.round(moving),
+      ascent,
+      avgSpeed: moving > 0 ? r1(distance / moving * 3.6) : null,
+      maxSpeed: r1((s.emaxSpd != null ? s.emaxSpd / 1000 : s.maxSpd != null ? s.maxSpd / 1000 : spdMax) * 3.6),
+      avgHr: s.avgHr ?? (hrT ? Math.round(hrSum / hrT) : null), maxHr: s.maxHr ?? (hrMax || null),
+      avgCad: s.avgCad ?? (cadT ? Math.round(cadSum / cadT) : null),
+      avgPwr: pwrT ? Math.round(pwrSum / pwrT) : null,
+      avgTmp: tmpT ? Math.round(tmpSum / tmpT) : null, minTmp: tmpT ? tmpMin : null, maxTmp: tmpT ? tmpMax : null,
+      kcal: s.kcal ?? null,
+      zoneSec: zt.map(Math.round), zones: [...zones],
+      z2pct: hrT ? Math.round((zt[0] + zt[1]) / hrT * 100) : null,
+      drift,
+      hasRoute: !!(route && route.lat.length),
+    },
+    streams, route,
+  };
+}
+
+// ═══════════════════════════════════════════════
+//  ライド：画面
+// ═══════════════════════════════════════════════
+const rideRef = id => doc(db, 'users', S.uid, 'rides', id);
+const streamRef = id => doc(db, 'users', S.uid, 'rideStreams', id);
+const LIB = {
+  echarts: 'https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js',
+  leaflet: 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js',
+  leafletCss: 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css',
+};
+const libP = {};
+function loadScript(src) {
+  return libP[src] ??= new Promise((ok, ng) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => { delete libP[src]; ng(new Error('ライブラリを読み込めませんでした')); }; document.head.appendChild(s); });
+}
+function loadCss(href) { if (!document.querySelector(`link[href="${href}"]`)) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href; document.head.appendChild(l); } }
+const fmtDur = sec => { const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60); return `${h}:${pad(m)}`; };
+const km1 = m => (m / 1000).toFixed(1);
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function rideDateLabel(r) { const d = new Date(r.start); return { md:`${d.getMonth()+1}/${d.getDate()}`, wd:WD[d.getDay()], hm:`${d.getHours()}:${pad(d.getMinutes())}` }; }
+const ridesOf = (from, to) => Object.values(S.rides).filter(r => r.date >= from && r.date <= to);
+const dayKm = day => ((day || {}).rides || []).reduce((n, id) => n + (S.rides[id]?.distance || 0), 0) / 1000;
+
+function renderRides() {
+  if (S.rideOpen) return renderRideDetail();
+  S._rideShown = null;
+  const list = Object.values(S.rides).sort((a, b) => b.start - a.start);
+  let html = `
+    <div class="card">
+      <h2><span class="dot" style="background:var(--ride)"></span>ライドログ<span class="r">${list.length} 件</span></h2>
+      <label class="btn primary" style="cursor:pointer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+        FIT / ZIP を取り込む
+        <input type="file" id="fitInput" accept=".fit,.zip" multiple hidden>
+      </label>
+      <div class="saved-note" id="importMsg" style="text-align:left">Garmin Connect →「オリジナルをエクスポート」のZIPをそのまま選べます（複数可）</div>
+    </div>`;
+  if (list.length) {
+    html += '<div class="card">';
+    let curM = '';
+    for (const r of list) {
+      const m = r.date.slice(0, 7);
+      if (m !== curM) {
+        curM = m;
+        const ms = list.filter(x => x.date.startsWith(m));
+        html += `<div class="month-h"><span>${Number(m.slice(0,4))}年${Number(m.slice(5))}月</span><span class="num">${ms.length}回 · ${km1(ms.reduce((n, x) => n + x.distance, 0))} km</span></div>`;
+      }
+      const d = rideDateLabel(r);
+      html += `
+        <button class="ride-row" data-id="${r.id}">
+          <div class="dt"><b>${d.md}</b><small>(${d.wd}) ${d.hm}</small></div>
+          <div><div class="km">${km1(r.distance)}<small>km</small></div>
+            <div class="meta">${fmtDur(r.moving)} · ${r.avgSpeed ?? '—'}km/h · ♥${r.avgHr ?? '—'}${r.indoor ? ' · 屋内' : ''}</div></div>
+          <div class="z2chip">${r.z2pct ?? '—'}<small>%</small><small>Z2以下</small></div>
+        </button>`;
+    }
+    html += '</div>';
+  } else {
+    html += `<div class="card placeholder"><div style="font-weight:700;color:var(--text)">まだライドがありません</div><div style="font-size:13px">上のボタンからFITファイルを取り込んでください</div></div>`;
+  }
+  $('v-ride').innerHTML = html;
+  $('fitInput').onchange = e => { importFiles([...e.target.files]); e.target.value = ''; };
+  $('v-ride').querySelectorAll('.ride-row').forEach(b => b.onclick = () => { S.rideOpen = b.dataset.id; window.scrollTo(0, 0); renderRides(); });
+}
+
+async function importFiles(files) {
+  const msg = $('importMsg');
+  let ok = 0, dup = 0; const ng = [];
+  msg.textContent = '解析中…';
+  for (const file of files) {
+    try {
+      const buf = await file.arrayBuffer();
+      const fits = /\.zip$/i.test(file.name) ? await unzipFits(buf) : [{ name:file.name, buf }];
+      if (!fits.length) throw new Error('ZIPの中にFITがありません');
+      for (const f of fits) {
+        const r = analyzeRide(parseFit(f.buf), { zones:S.settings.zones, privacyM:S.settings.privacyM ?? 500 });
+        if (S.rides[r.id]) { dup++; continue; }
+        const b = writeBatch(db);
+        b.set(rideRef(r.id), { ...r.summary, id:r.id, file:f.name, importedAt:serverTimestamp() });
+        b.set(streamRef(r.id), { ...r.streams, route:r.route });
+        b.set(dayRef(r.summary.date), { date:r.summary.date, rides:arrayUnion(r.id), updatedAt:serverTimestamp() }, { merge:true });
+        await b.commit();
+        S.rides[r.id] = { ...r.summary, id:r.id };
+        ok++;
+      }
+    } catch (e) { console.error(e); ng.push(`${file.name}：${e.message}`); }
+  }
+  const parts = [];
+  if (ok) parts.push(`${ok}件を取り込みました`);
+  if (dup) parts.push(`${dup}件は取り込み済みのためスキップ`);
+  if (ng.length) parts.push(`失敗 ${ng.length}件（${ng.join(' / ')}）`);
+  toast(parts[0] || '取り込めませんでした');
+  render();
+  const m2 = $('importMsg'); if (m2) m2.textContent = parts.join('、');
+}
+
+const ZNAME = ['Z1 回復', 'Z2 持久', 'Z3 テンポ', 'Z4 閾値', 'Z5 最大'];
+let rideCharts = [], rideMap = null;
+function disposeRideViz() { rideCharts.forEach(c => c.dispose()); rideCharts = []; if (rideMap) { rideMap.remove(); rideMap = null; } }
+
+async function renderRideDetail() {
+  const r = S.rides[S.rideOpen];
+  if (!r) { S.rideOpen = null; return renderRides(); }
+  if (S._rideShown === r.id + document.documentElement.dataset.theme) return;   // 再描画でグラフを壊さない
+  S._rideShown = r.id + document.documentElement.dataset.theme;
+  disposeRideViz();
+  const d = rideDateLabel(r), z = r.zones || S.settings.zones;
+  const zsum = r.zoneSec.reduce((a, b) => a + b, 0) || 1;
+  const bounds = [0, ...z];
+  const driftTxt = r.drift == null ? '—' : `${r.drift > 0 ? '+' : ''}${r.drift}%`;
+  const driftNote = r.drift == null ? '計測が短いため算出なし' : r.drift < 5 ? '良好：後半も心拍が上がりすぎずに走れています' : r.drift < 8 ? 'やや上昇：後半に心拍が上がっています' : '大きめ：疲労や暑さで後半の心拍が上がっています';
+  const t = (k, v, u, sub='') => `<div class="t"><div class="k">${k}</div><div class="v">${v ?? '—'}<small>${v == null ? '' : u}</small></div>${sub ? `<div class="sub">${sub}</div>` : ''}</div>`;
+  $('v-ride').innerHTML = `
+    <button class="backbtn" id="rideBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>一覧</button>
+    <div class="ride-title"><span class="num">${d.md}</span> (${d.wd}) <span class="num">${d.hm}</span>${r.indoor ? '<span class="tag">屋内</span>' : ''}</div>
+    <div class="card"><div class="today">
+      ${t('距離', km1(r.distance), 'km')}${t('走行時間', fmtDur(r.moving), '', `経過 ${fmtDur(r.elapsed)}`)}${t('平均速度', r.avgSpeed, 'km/h', `最高 ${r.maxSpeed ?? '—'}`)}
+      ${t('平均心拍', r.avgHr, 'bpm', `最大 ${r.maxHr ?? '—'}`)}${t('ケイデンス', r.avgCad, 'rpm')}${t('獲得標高', r.ascent, 'm')}
+      ${t('気温', r.avgTmp, '℃', r.minTmp != null ? `${r.minTmp}〜${r.maxTmp}℃` : '')}${t('カロリー', r.kcal, 'kcal')}${r.avgPwr != null ? t('平均パワー', r.avgPwr, 'W') : ''}
+    </div></div>
+    <div class="card">
+      <h2><span class="dot" style="background:var(--sober)"></span>Z2達成率<span class="r num">Z2上限 ${z[1]} bpm</span></h2>
+      <div style="display:flex;align-items:baseline;gap:6px"><span class="bigpct">${r.z2pct ?? '—'}</span><span style="font-size:18px;color:var(--muted);font-weight:700">%</span>
+        <span class="label" style="margin-left:6px">心拍${z[1]}以下で走れた時間の割合</span></div>
+      <div class="zbar">${r.zoneSec.map((s, i) => `<i style="background:${ZONE_COLORS[i]};flex:${s}"></i>`).join('')}</div>
+      ${r.zoneSec.map((s, i) => `<div class="zrow"><i style="background:${ZONE_COLORS[i]}"></i><span>${ZNAME[i]}</span><span class="num rng">${i === 0 ? '〜' + z[0] : i === 4 ? (z[3]+1) + '〜' : (bounds[i]+1) + '〜' + z[i]}</span><span class="num">${fmtDur(s)}</span><span class="num pct">${Math.round(s / zsum * 100)}%</span></div>`).join('')}
+    </div>
+    <div class="card">
+      <h2><span class="dot" style="background:var(--strength)"></span>心拍ドリフト<span class="r">速度÷心拍の前半/後半比較</span></h2>
+      <div style="display:flex;align-items:baseline;gap:10px"><span class="bigpct" style="color:${r.drift == null ? 'var(--dim)' : r.drift < 5 ? 'var(--sober)' : r.drift < 8 ? 'var(--strength)' : 'var(--drink)'};font-size:44px">${driftTxt}</span></div>
+      <div class="label" style="margin-top:4px">${driftNote}（目安：5%未満なら良好）</div>
+    </div>
+    ${r.hasRoute ? `<div class="card"><h2><span class="dot" style="background:var(--ride)"></span>ルート<span class="r">色は心拍ゾーン</span></h2><div id="rideMap"></div><div class="label" style="margin-top:6px">出発・到着地点の周囲は表示していません（プライバシーゾーン）。スマホでは地図をタップすると動かせます</div></div>` : ''}
+    <div class="card"><h2>グラフ<span class="r" id="chartX"></span></h2><div id="rideCharts"><div class="label">読み込み中…</div></div></div>
+    <button class="btn danger" id="rideDel" style="margin-bottom:12px">このライドを削除</button>`;
+  $('rideBack').onclick = () => { S.rideOpen = null; disposeRideViz(); renderRides(); window.scrollTo(0, 0); };
+  let armed = false;
+  $('rideDel').onclick = async e => {
+    if (!armed) { armed = true; e.target.textContent = 'もう一度押すと削除します'; setTimeout(() => { armed = false; if ($('rideDel')) $('rideDel').textContent = 'このライドを削除'; }, 3000); return; }
+    const b = writeBatch(db);
+    b.delete(rideRef(r.id)); b.delete(streamRef(r.id));
+    b.set(dayRef(r.date), { rides:arrayRemove(r.id), updatedAt:serverTimestamp() }, { merge:true });
+    await b.commit().catch(err => { console.error(err); toast('削除に失敗しました'); });
+    delete S.rides[r.id]; S.rideOpen = null; disposeRideViz(); toast('削除しました'); render();
+  };
+  // 時系列データ（詳細を開いたときだけ読む）
+  let st = S.rideCache[r.id];
+  try {
+    if (!st) { const snap = await getDoc(streamRef(r.id)); st = S.rideCache[r.id] = snap.data(); }
+    if (!st) throw new Error('データがありません');
+  } catch (e) { $('rideCharts').innerHTML = `<div class="label">グラフを読み込めませんでした（${esc(e.message)}）</div>`; return; }
+  if (S.rideOpen !== r.id) return;
+  drawRideCharts(r, st).catch(e => { console.error(e); $('rideCharts').innerHTML = '<div class="label">グラフを表示できませんでした（通信を確認してください）</div>'; });
+  if (r.hasRoute && st.route) drawRideMap(st.route, z).catch(e => { console.error(e); const m = $('rideMap'); if (m) m.innerHTML = '<div class="label" style="padding:16px">地図を表示できませんでした</div>'; });
+}
+
+async function drawRideCharts(r, st) {
+  await loadScript(LIB.echarts);
+  if (S.rideOpen !== r.id) return;
+  const useD = st.d && st.d.some(v => v != null) && !r.indoor;
+  const xs = useD ? st.d.map(v => v == null ? null : v / 1000) : st.t.map(v => v / 60);
+  $('chartX').textContent = useD ? '横軸：距離（km）' : '横軸：時間（分）';
+  const C = { text:cssVar('--muted'), line:cssVar('--line'), dim:cssVar('--dim') };
+  const z = r.zones || S.settings.zones;
+  const defs = [
+    { k:'hr',  name:'心拍',       unit:'bpm',  color:cssVar('--drink') },
+    { k:'spd', name:'速度',       unit:'km/h', color:cssVar('--ride') },
+    { k:'cad', name:'ケイデンス', unit:'rpm',  color:cssVar('--strength'), scatter:true },
+    { k:'alt', name:'標高',       unit:'m',    color:cssVar('--body'), area:true },
+    { k:'tmp', name:'気温',       unit:'℃',   color:'#e0b400' },
+    { k:'pwr', name:'パワー',     unit:'W',    color:cssVar('--accent-t') },
+  ].filter(d => st[d.k] && st[d.k].some(v => v != null && v !== 0));
+  $('rideCharts').innerHTML = defs.map(d => `<div class="chart-t">${d.name}<span>${d.unit}</span></div><div class="chart" id="ch-${d.k}"></div>`).join('');
+  const xMax = Math.max(...xs.filter(v => v != null));
+  defs.forEach((d, i) => {
+    const data = xs.map((x, j) => (x == null || st[d.k][j] == null) ? null : [x, st[d.k][j]]).filter(Boolean);
+    const ch = echarts.init($('ch-' + d.k), null, { renderer:'canvas' });
+    const last = i === defs.length - 1;
+    ch.setOption({
+      animation:false, grid:{ left:36, right:8, top:6, bottom: last ? 22 : 6 },
+      xAxis:{ type:'value', min:0, max:Math.ceil(xMax), axisLabel:{ show:last, color:C.dim, fontSize:10 }, axisLine:{ lineStyle:{ color:C.line } }, axisTick:{ show:false }, splitLine:{ show:false } },
+      yAxis:{ type:'value', scale:true, splitNumber:3, axisLabel:{ color:C.dim, fontSize:10 }, splitLine:{ lineStyle:{ color:C.line, opacity:.6 } } },
+      tooltip:{ trigger:'axis', confine:true, backgroundColor:cssVar('--surface'), borderColor:C.line, textStyle:{ color:cssVar('--text'), fontSize:12 },
+        axisPointer:{ type:'line', lineStyle:{ color:C.dim } },
+        formatter: p => p.length ? `${useD ? p[0].value[0].toFixed(1) + ' km' : Math.round(p[0].value[0]) + ' 分'}<br><b>${p[0].value[1]}</b> ${d.unit}` : '' },
+      series:[{
+        type: d.scatter ? 'scatter' : 'line', data, symbol: d.scatter ? 'circle' : 'none', symbolSize: d.scatter ? 2 : 0, large: !!d.scatter, showSymbol:false, sampling:'lttb',
+        lineStyle:{ color:d.color, width:1.5 }, itemStyle:{ color:d.color, opacity:.6 },
+        areaStyle: d.area ? { color:d.color, opacity:.18 } : undefined,
+        markArea: d.k === 'hr' ? { silent:true, data: [[60, z[0]], [z[0], z[1]], [z[1], z[2]], [z[2], z[3]], [z[3], 230]].map((b, zi) => [{ yAxis:b[0], itemStyle:{ color:ZONE_COLORS[zi], opacity:.07 } }, { yAxis:b[1] }]) } : undefined,
+      }],
+    });
+    ch.group = 'ride';
+    rideCharts.push(ch);
+  });
+  echarts.connect('ride');
+}
+
+async function drawRideMap(route, z) {
+  loadCss(LIB.leafletCss);
+  await loadScript(LIB.leaflet);
+  const el = $('rideMap'); if (!el) return;
+  const mobile = matchMedia('(pointer:coarse)').matches;
+  rideMap = L.map(el, { zoomControl:true, attributionControl:true, dragging:!mobile, tap:false, scrollWheelZoom:false });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:18, attribution:'&copy; OpenStreetMap contributors' }).addTo(rideMap);
+  const zi = hr => hr == null ? 1 : z.filter(b => hr > b).length;
+  const bounds = [];
+  let seg = [], segZ = null;
+  const flush = () => { if (seg.length > 1) L.polyline(seg, { color:ZONE_COLORS[segZ], weight:4, opacity:.95, lineCap:'round' }).addTo(rideMap); };
+  for (let i = 0; i < route.lat.length; i++) {
+    if (route.lat[i] == null) { flush(); seg = []; segZ = null; continue; }
+    const p = [route.lat[i], route.lng[i]], k = zi(route.hr[i]);
+    bounds.push(p);
+    if (segZ !== null && k !== segZ) { seg.push(p); flush(); seg = [p]; } else seg.push(p);
+    segZ = k;
+  }
+  flush();
+  if (bounds.length) rideMap.fitBounds(bounds, { padding:[16, 16] });
+  if (mobile) rideMap.on('click', () => rideMap.dragging.enabled() ? rideMap.dragging.disable() : rideMap.dragging.enable());
+}
+window.addEventListener('resize', () => rideCharts.forEach(c => c.resize()));
 
 // ═══════════════════════════════════════════════
 //  表示テーマ（端末ごとに保存）

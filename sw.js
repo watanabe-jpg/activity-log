@@ -1,6 +1,6 @@
 // ACTLOG service worker
 // 画面本体はネット優先（更新がすぐ反映される）、オフライン時はキャッシュを使う
-const CACHE = 'actlog-v1';
+const CACHE = 'actlog-v2';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -13,8 +13,8 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  // Firebase SDK・フォント：バージョン固定なのでキャッシュ優先
-  if (url.hostname === 'www.gstatic.com' || url.hostname.endsWith('fonts.googleapis.com') || url.hostname === 'fonts.gstatic.com') {
+  // Firebase SDK・グラフ/地図ライブラリ・フォント：バージョン固定なのでキャッシュ優先
+  if (url.hostname === 'www.gstatic.com' || url.hostname === 'cdn.jsdelivr.net' || url.hostname.endsWith('fonts.googleapis.com') || url.hostname === 'fonts.gstatic.com') {
     e.respondWith(caches.match(req).then(hit => hit || fetch(req).then(res => {
       const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); return res;
     })));
