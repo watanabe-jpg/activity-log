@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0d10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ACTLOG">
+<title>ACTLOG</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0d10; --surface:#14181d; --surface2:#1b2027; --line:#262d35;
+  --text:#e9eef3; --muted:#8a96a3; --dim:#5a6570;
+  --accent:#c8f560; --accent-ink:#141a05;
+  --ride:#4fd1e8; --strength:#ff8a4c; --sober:#3ddc97; --drink:#ff5d6c; --body:#a98bff;
+  --heat0:#1a1f25;
+  --r:16px;
+  --num:'Barlow Condensed', -apple-system, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+  --safe-b:env(safe-area-inset-bottom, 0px);
+  --safe-t:env(safe-area-inset-top, 0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Noto Sans JP','Yu Gothic UI',sans-serif;font-size:15px;line-height:1.5;
+  min-height:100dvh;overscroll-behavior-y:none;user-select:none;-webkit-user-select:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;touch-action:manipulation}
+input,select{font:inherit;color:var(--text);background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;user-select:text;-webkit-user-select:text}
+.num{font-family:var(--num);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.hidden{display:none!important}
+
+/* ── layout ── */
+#app{max-width:560px;margin:0 auto;padding:calc(var(--safe-t) + 8px) 16px calc(88px + var(--safe-b))}
+header.top{display:flex;align-items:center;justify-content:space-between;height:52px}
+.brand{font-family:var(--num);font-weight:700;font-size:24px;letter-spacing:.08em}
+.brand b{color:var(--accent)}
+.datebar{display:flex;align-items:center;gap:4px}
+.datebar .d{font-family:var(--num);font-size:22px;font-weight:600;min-width:118px;text-align:center}
+.datebar .d small{font-family:inherit;font-size:14px;color:var(--muted);margin-left:2px}
+.iconbtn{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--surface)}
+.iconbtn:disabled{opacity:.3}
+.iconbtn svg{width:20px;height:20px}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(11,13,16,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-top:1px solid var(--line);padding-bottom:var(--safe-b);z-index:20}
+nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+nav.tabs button{height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--dim);font-size:11px;font-weight:600}
+nav.tabs button svg{width:24px;height:24px}
+nav.tabs button.on{color:var(--accent)}
+section.view{display:none}
+section.view.on{display:block}
+
+.card{background:var(--surface);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.card h2{margin:0 0 12px;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.06em;display:flex;align-items:center;gap:8px}
+.card h2 .dot{width:8px;height:8px;border-radius:50%}
+.card h2 .r{margin-left:auto;font-weight:600;color:var(--dim);font-size:12px;letter-spacing:0}
+.label{font-size:12px;color:var(--muted)}
+
+/* ── stepper ── */
+.bodyrow{padding:10px 0;border-top:1px solid var(--line)}
+.bodyrow:first-of-type{border-top:0}
+.bodyrow .nm{font-size:13px;color:var(--muted);line-height:1.3;margin-bottom:6px;display:flex;justify-content:space-between}
+.bodyrow .nm .prev{font-size:12px;color:var(--dim)}
+.stepper{display:grid;grid-template-columns:48px 56px 1fr 56px 48px;gap:6px;align-items:center}
+.stepper button{height:48px;border-radius:12px;background:var(--surface2);font-family:var(--num);font-size:18px;font-weight:600}
+.stepper button.big{font-size:22px}
+.stepper button:active{background:var(--line)}
+.stepper .val{text-align:center;font-family:var(--num);font-size:30px;font-weight:600;line-height:1}
+.stepper .val small{font-size:14px;color:var(--muted);margin-left:2px}
+.stepper.unsaved .val{color:var(--muted)}
+.btn{height:52px;border-radius:14px;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;width:100%}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:var(--surface2)}
+.btn.danger{background:rgba(255,93,108,.12);color:var(--drink)}
+.btn:active{transform:scale(.98)}
+.saved-note{font-size:12px;color:var(--dim);text-align:right;margin-top:8px;min-height:18px}
+
+/* ── alcohol ── */
+.seg2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg2 button{height:64px;border-radius:14px;background:var(--surface2);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px;border:2px solid transparent}
+.seg2 button svg{width:22px;height:22px}
+.seg2 button.on.no{border-color:var(--sober);color:var(--sober);background:rgba(61,220,151,.1)}
+.seg2 button.on.yes{border-color:var(--drink);color:var(--drink);background:rgba(255,93,108,.1)}
+
+/* ── exercise ── */
+.ex{border-top:1px solid var(--line);padding:14px 0}
+.ex:first-of-type{border-top:0;padding-top:2px}
+.ex-head{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}
+.ex-head .nm{font-weight:700;font-size:16px}
+.ex-head .tg{font-size:12px;color:var(--muted)}
+.ex-head .ok{margin-left:auto;font-size:11px;font-weight:800;color:var(--accent-ink);background:var(--accent);border-radius:20px;padding:2px 9px;letter-spacing:.05em}
+.sets{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.sets .s{min-width:52px;height:30px;border-radius:9px;border:1.5px dashed var(--line);display:grid;place-items:center;font-family:var(--num);font-size:16px;color:var(--dim);padding:0 8px}
+.sets .s.done{border:0;background:rgba(255,138,76,.16);color:var(--strength);font-weight:600}
+.sets .s.extra{border:0;background:rgba(255,138,76,.08);color:var(--strength)}
+.ex-ctrl{display:grid;grid-template-columns:44px 1fr 44px 1.4fr;gap:6px;align-items:center}
+.ex-ctrl.time{grid-template-columns:44px 1fr 44px 48px 1.4fr}
+.ex-ctrl button{height:48px;border-radius:12px;background:var(--surface2);font-family:var(--num);font-size:22px;font-weight:600}
+.ex-ctrl .v{text-align:center;font-family:var(--num);font-size:28px;font-weight:600}
+.ex-ctrl .v small{font-size:13px;color:var(--muted);margin-left:1px}
+.ex-ctrl .go{background:var(--strength);color:#1d0d03;font-family:inherit;font-size:15px;font-weight:800}
+.ex-ctrl .tm{display:grid;place-items:center}
+.ex-ctrl .tm svg{width:22px;height:22px}
+.ex-foot{display:flex;justify-content:flex-end;margin-top:6px}
+.linkbtn{font-size:12px;color:var(--muted);padding:6px 4px}
+.linkbtn:disabled{opacity:.3}
+
+/* timer overlay */
+#timer{position:fixed;inset:0;background:var(--bg);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:24px}
+#timer .t-name{font-size:18px;font-weight:700;color:var(--muted)}
+#timer .t-sec{font-family:var(--num);font-size:140px;font-weight:700;line-height:1;color:var(--strength)}
+#timer .t-sec.hit{color:var(--accent)}
+#timer .t-target{font-size:14px;color:var(--dim)}
+#timer .t-btns{display:grid;grid-template-columns:1fr 2fr;gap:10px;width:100%;max-width:360px}
+
+/* ── home ── */
+.today{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.today .t{background:var(--surface2);border-radius:12px;padding:12px 10px}
+.today .t .k{font-size:11px;color:var(--muted);font-weight:600}
+.today .t .v{font-family:var(--num);font-size:28px;font-weight:600;line-height:1.1;margin-top:2px}
+.today .t .v small{font-size:13px;color:var(--muted)}
+.today .t .sub{font-size:11px;color:var(--dim);font-family:var(--num)}
+.up{color:var(--drink)} .down{color:var(--sober)}
+.streaks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.streak{border-radius:12px;padding:12px 10px;background:var(--surface2);position:relative;overflow:hidden}
+.streak::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c)}
+.streak .k{font-size:11px;color:var(--muted);font-weight:600}
+.streak .v{font-family:var(--num);font-size:40px;font-weight:700;line-height:1;color:var(--c)}
+.streak .v small{font-size:14px;color:var(--muted);margin-left:2px;font-weight:600}
+.streak .best{font-size:11px;color:var(--dim)}
+.totals{width:100%;border-collapse:collapse}
+.totals th,.totals td{padding:8px 4px;text-align:right;border-top:1px solid var(--line)}
+.totals tr:first-child th,.totals tr:first-child td{border-top:0}
+.totals th{text-align:left;font-weight:600;font-size:13px;color:var(--muted)}
+.totals thead th{font-size:11px;color:var(--dim);text-align:right;border:0;padding-top:0}
+.totals thead th:first-child{text-align:left}
+.totals td{font-family:var(--num);font-size:20px;font-weight:600}
+.totals td small{font-size:12px;color:var(--muted);margin-left:2px}
+.chips{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.chips button{height:32px;padding:0 12px;border-radius:20px;background:var(--surface2);font-size:12px;font-weight:700;color:var(--muted)}
+.chips button.on{background:var(--c,var(--accent));color:#0b0d10}
+.heat-wrap{overflow-x:auto;scrollbar-width:none;margin:0 -4px;padding:0 4px}
+.heat-wrap::-webkit-scrollbar{display:none}
+.heat{display:grid;grid-auto-flow:column;grid-template-rows:14px repeat(7,13px);gap:3px;width:max-content}
+.heat .m{font-size:10px;color:var(--dim);white-space:nowrap;grid-row:1;line-height:14px}
+.heat .c{width:13px;height:13px;border-radius:3px;background:var(--heat0)}
+.heat .c.f{background:transparent}
+.heat .c.today{outline:1.5px solid var(--text);outline-offset:0}
+.legend{display:flex;align-items:center;gap:4px;justify-content:flex-end;font-size:11px;color:var(--dim);margin-top:10px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+/* ── settings ── */
+.srow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.srow:first-of-type{border-top:0}
+.srow .nm{font-size:14px}
+.srow .nm small{display:block;font-size:11px;color:var(--dim)}
+.mini{display:grid;grid-template-columns:40px 64px 40px;gap:4px;align-items:center}
+.mini button{height:40px;border-radius:10px;background:var(--surface2);font-family:var(--num);font-size:20px;font-weight:600}
+.mini .v{text-align:center;font-family:var(--num);font-size:22px;font-weight:600}
+.zonebar{display:flex;height:10px;border-radius:5px;overflow:hidden;margin:4px 0 8px}
+.zonebar i{display:block}
+.exs{border-top:1px solid var(--line);padding:12px 0}
+.exs:first-of-type{border-top:0}
+.exs .top{display:flex;align-items:center;gap:8px}
+.exs .top .nm{font-weight:700;flex:1}
+.exs .top .tg{font-size:12px;color:var(--muted)}
+.exs .edit{margin-top:10px;display:grid;gap:8px}
+.seg{display:grid;grid-auto-flow:column;gap:4px;background:var(--surface2);border-radius:10px;padding:3px}
+.seg button{height:34px;border-radius:8px;font-size:13px;font-weight:700;color:var(--muted)}
+.seg button.on{background:var(--line);color:var(--text)}
+.toggle{width:50px;height:30px;border-radius:15px;background:var(--line);position:relative;flex:none}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--muted);transition:.15s}
+.toggle.on{background:var(--accent)}
+.toggle.on::after{left:23px;background:var(--accent-ink)}
+
+/* ── auth ── */
+#auth{max-width:400px;margin:0 auto;padding:calc(var(--safe-t) + 15vh) 24px 40px}
+#auth .logo{font-family:var(--num);font-size:56px;font-weight:700;letter-spacing:.08em;line-height:1}
+#auth .logo b{color:var(--accent)}
+#auth p.lead{color:var(--muted);margin:8px 0 32px}
+#auth form{display:grid;gap:10px;margin-top:20px}
+#auth .or{text-align:center;color:var(--dim);font-size:12px;margin:18px 0 0}
+#auth .err{color:var(--drink);font-size:13px;min-height:20px}
+.toast{position:fixed;left:50%;bottom:calc(84px + var(--safe-b));transform:translateX(-50%);background:var(--text);color:var(--bg);font-weight:700;font-size:13px;padding:10px 16px;border-radius:12px;z-index:60;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.placeholder{text-align:center;color:var(--muted);padding:48px 16px}
+.placeholder svg{width:56px;height:56px;color:var(--ride);margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<!-- 設定未完了 -->
+<div id="noconfig" class="hidden" style="padding:40px 24px;max-width:480px;margin:0 auto">
+  <div class="brand" style="font-size:40px">ACT<b>LOG</b></div>
+  <p style="color:var(--muted)">Firebaseの設定がまだです。<br>index.html の <code>firebaseConfig</code> に、Firebaseコンソールの値を貼り付けてください。</p>
+</div>
+
+<!-- ログイン -->
+<div id="auth" class="hidden">
+  <div class="logo">ACT<b>LOG</b></div>
+  <p class="lead">毎日の積み上げを、ひと目で。</p>
+  <button class="btn primary" id="btnGoogle">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.3z"/><path d="M12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.8-1.8-5.6-4.1H3.1v2.6A10 10 0 0 0 12 22z" opacity=".75"/><path d="M6.4 14c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V7.4H3.1a10 10 0 0 0 0 9.2L6.4 14z" opacity=".55"/><path d="M12 5.9c1.5 0 2.8.5 3.8 1.5l2.9-2.9A10 10 0 0 0 3.1 7.4L6.4 10c.8-2.4 3-4.1 5.6-4.1z" opacity=".9"/></svg>
+    Googleでログイン
+  </button>
+  <p class="or">またはメールアドレスで</p>
+  <form id="emailForm" autocomplete="on">
+    <input type="email" id="email" placeholder="メールアドレス" autocomplete="username" required>
+    <input type="password" id="pass" placeholder="パスワード（6文字以上）" autocomplete="current-password" required minlength="6">
+    <button class="btn ghost" type="submit">ログイン</button>
+    <button class="linkbtn" type="button" id="btnSignup">はじめての場合：このメールアドレスで登録</button>
+    <div class="err" id="authErr"></div>
+  </form>
+</div>
+
+<!-- アプリ -->
+<div id="app" class="hidden">
+  <header class="top">
+    <div class="brand">ACT<b>LOG</b></div>
+    <div class="datebar" id="datebar">
+      <button class="iconbtn" id="dPrev" aria-label="前の日"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <div class="d" id="dLabel"></div>
+      <button class="iconbtn" id="dNext" aria-label="次の日"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+    </div>
+  </header>
+
+  <!-- ホーム -->
+  <section class="view" id="v-home">
+    <div class="card">
+      <h2>今日<span class="r num" id="hToday"></span></h2>
+      <div class="today" id="todayTiles"></div>
+    </div>
+    <div class="card">
+      <h2>連続記録</h2>
+      <div class="streaks" id="streaks"></div>
+    </div>
+    <div class="card">
+      <h2>積み上げ</h2>
+      <table class="totals" id="totals"></table>
+    </div>
+    <div class="card">
+      <h2>1年間</h2>
+      <div class="chips" id="heatChips"></div>
+      <div class="heat-wrap" id="heatWrap"><div class="heat" id="heat"></div></div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </section>
+
+  <!-- 記録 -->
+  <section class="view" id="v-log">
+    <div class="card">
+      <h2><span class="dot" style="background:var(--body)"></span>体組成</h2>
+      <div id="bodyRows"></div>
+      <button class="btn primary" id="bodySave" style="margin-top:10px">この値で記録</button>
+      <div class="saved-note" id="bodyNote"></div>
+    </div>
+    <div class="card">
+      <h2><span class="dot" style="background:var(--sober)"></span>飲酒</h2>
+      <div class="seg2">
+        <button class="no" id="alcNo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>飲まない</button>
+        <button class="yes" id="alcYes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l-1 8a4 4 0 0 1-8 0L7 3zM12 15v6M8 21h8"/></svg>飲んだ</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2><span class="dot" style="background:var(--strength)"></span>筋トレ<span class="r" id="exSummary"></span></h2>
+      <div id="exList"></div>
+    </div>
+  </section>
+
+  <!-- ライド -->
+  <section class="view" id="v-ride">
+    <div class="card placeholder">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M15 6h2l3 11M5.5 17l4-8h7M9 6h3l3.5 11"/></svg>
+      <div style="font-weight:700;color:var(--text)">ライドログは段階2で追加します</div>
+      <div style="font-size:13px">FITファイルの取り込み・地図・心拍ゾーン・Z2達成率</div>
+    </div>
+  </section>
+
+  <!-- 設定 -->
+  <section class="view" id="v-set">
+    <div class="card">
+      <h2><span class="dot" style="background:var(--drink)"></span>心拍ゾーン</h2>
+      <div class="zonebar" id="zoneBar"></div>
+      <div id="zoneRows"></div>
+    </div>
+    <div class="card">
+      <h2><span class="dot" style="background:var(--strength)"></span>筋トレメニュー</h2>
+      <div id="exSettings"></div>
+      <button class="btn ghost" id="exAdd" style="margin-top:8px">＋ 種目を追加</button>
+    </div>
+    <div class="card">
+      <h2>アカウント</h2>
+      <div class="srow"><div class="nm" id="accName"></div></div>
+      <button class="btn danger" id="btnLogout" style="margin-top:8px">ログアウト</button>
+    </div>
+    <p style="text-align:center;font-size:11px;color:var(--dim)" class="num" id="ver"></p>
+  </section>
+</div>
+
+<nav class="tabs hidden" id="tabs"><div class="in">
+  <button data-v="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>ホーム</button>
+  <button data-v="log"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>記録</button>
+  <button data-v="ride"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M15 6h2l3 11M5.5 17l4-8h7M9 6h3l3.5 11"/></svg>ライド</button>
+  <button data-v="set"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>設定</button>
+</div></nav>
+
+<div id="timer" class="hidden">
+  <div class="t-name" id="tName"></div>
+  <div class="t-sec" id="tSec">0</div>
+  <div class="t-target" id="tTarget"></div>
+  <div class="t-btns">
+    <button class="btn ghost" id="tCancel">やめる</button>
+    <button class="btn primary" id="tStop">停止して記録</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+// ═══════════════════════════════════════════════
+//  Firebase設定
+//  Firebaseコンソール → プロジェクトの設定 → マイアプリ（ウェブ）に表示される値を貼り付けてください
+// ═══════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyCu75WOJ9EXIyR8TSufQJBLM6IA1V2mFrk",
+  authDomain: "actlog-555cc.firebaseapp.com",
+  projectId: "actlog-555cc",
+  storageBucket: "actlog-555cc.firebasestorage.app",
+  messagingSenderId: "1021262216779",
+  appId: "1:1021262216779:web:f266ab39c981c88e7657ce",
+};
+
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
+import {
+  getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup,
+  signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, connectAuthEmulator,
+} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
+import {
+  initializeFirestore, persistentLocalCache, persistentMultipleTabManager, connectFirestoreEmulator,
+  doc, setDoc, collection, query, where, onSnapshot, deleteField, serverTimestamp,
+} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
+
+const VERSION = 'v1.0.0（段階1）';
+
+// localhost で ?emu を付けて開くとFirebaseエミュレータに接続（開発用）
+const USE_EMU = ['localhost','127.0.0.1'].includes(location.hostname) && new URLSearchParams(location.search).has('emu');
+const cfg = USE_EMU ? { apiKey:'demo-key', authDomain:'demo-actlog.firebaseapp.com', projectId:'demo-actlog', appId:'demo' } : firebaseConfig;
+const CONFIGURED = USE_EMU || !String(firebaseConfig.apiKey).startsWith('YOUR_');
+
+let auth, db;
+if (CONFIGURED) {
+  const app = initializeApp(cfg);
+  auth = getAuth(app);
+  try { db = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) }); }
+  catch (e) { db = initializeFirestore(app, {}); }
+  if (USE_EMU) {
+    connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings:true });
+    connectFirestoreEmulator(db, '127.0.0.1', 8080);
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  既定値
+// ═══════════════════════════════════════════════
+const DEFAULT_EXERCISES = [
+  { id:'squat',     name:'スクワット',     type:'reps', sides:false, setsMin:3, setsMax:3, target:15, targetMax:15, on:true },
+  { id:'lunge',     name:'ランジ',         type:'reps', sides:true,  setsMin:2, setsMax:3, target:10, targetMax:10, on:true },
+  { id:'hipthrust', name:'ヒップスラスト', type:'reps', sides:false, setsMin:3, setsMax:3, target:15, targetMax:15, on:true },
+  { id:'plank',     name:'プランク',       type:'time', sides:false, setsMin:3, setsMax:3, target:45, targetMax:60, on:true },
+  { id:'sideplank', name:'サイドプランク', type:'time', sides:true,  setsMin:2, setsMax:2, target:30, targetMax:30, on:true },
+];
+const DEFAULT_SETTINGS = { maxHR:182, zones:[109,138,155,168], exercises:DEFAULT_EXERCISES };
+const BODY_FIELDS = [
+  { key:'weight', name:'体重',     unit:'kg', def:65.0, min:30, max:150 },
+  { key:'fat',    name:'体脂肪率', unit:'%',  def:20.0, min:3,  max:60 },
+  { key:'muscle', name:'骨格筋率', unit:'%',  def:33.0, min:15, max:60 },
+];
+
+// ═══════════════════════════════════════════════
+//  ユーティリティ
+// ═══════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2,'0');
+const ds = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parseDs = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const addDays = (s, n) => { const d = parseDs(s); d.setDate(d.getDate()+n); return ds(d); };
+const todayStr = () => ds(new Date());
+const WD = ['日','月','火','水','木','金','土'];
+const r1 = v => Math.round(v*10)/10;
+let toastT;
+function toast(msg) { const t=$('toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),1600); }
+
+// 長押しで連続変化（加速あり）
+// 再描画でボタンが消えても止まるよう、指を離したら必ず停止
+let holdStop = null;
+['pointerup','pointercancel'].forEach(ev => document.addEventListener(ev, () => { holdStop?.(); holdStop = null; }));
+function holdRepeat(btn, fn) {
+  let t1, t2, n = 0;
+  const stop = () => { clearTimeout(t1); clearInterval(t2); };
+  btn.addEventListener('pointerdown', e => {
+    e.preventDefault(); holdStop?.(); holdStop = stop; fn(); n = 0;
+    t1 = setTimeout(() => { t2 = setInterval(() => { n++; fn(); if (n === 15) { clearInterval(t2); t2 = setInterval(fn, 40); } }, 110); }, 400);
+  });
+  ['pointerup','pointerleave','pointercancel'].forEach(ev => btn.addEventListener(ev, stop));
+  btn.addEventListener('contextmenu', e => e.preventDefault());
+}
+
+// ═══════════════════════════════════════════════
+//  状態
+// ═══════════════════════════════════════════════
+const S = {
+  uid:null, user:null,
+  settings: structuredClone(DEFAULT_SETTINGS),
+  days: {},              // 'YYYY-MM-DD' -> doc data
+  date: todayStr(),      // 記録画面で開いている日
+  view: 'home',
+  bodyDraft: null,       // {weight,fat,muscle}
+  bodyDraftDate: null,
+  exVal: {},             // exId -> 現在のステッパー値
+  heatMode: 'all',
+  editEx: null,
+};
+let unsubDays = null, unsubSet = null;
+
+const dayRef = date => doc(db, 'users', S.uid, 'days', date);
+const setRef = () => doc(db, 'users', S.uid, 'settings', 'main');
+const saveDay = (date, patch) => setDoc(dayRef(date), { ...patch, date, updatedAt: serverTimestamp() }, { merge:true })
+  .catch(e => { console.error(e); toast('保存に失敗しました'); });
+const saveSettings = patch => setDoc(setRef(), patch, { merge:true }).catch(e => { console.error(e); toast('保存に失敗しました'); });
+
+// ═══════════════════════════════════════════════
+//  認証
+// ═══════════════════════════════════════════════
+if (!CONFIGURED) {
+  $('noconfig').classList.remove('hidden');
+} else {
+  onAuthStateChanged(auth, user => {
+    if (user) { S.user = user; S.uid = user.uid; startApp(); }
+    else { stopApp(); $('auth').classList.remove('hidden'); $('app').classList.add('hidden'); $('tabs').classList.add('hidden'); }
+  });
+}
+const AUTH_ERR = {
+  'auth/invalid-credential':'メールアドレスかパスワードが違います', 'auth/wrong-password':'パスワードが違います',
+  'auth/user-not-found':'登録されていません', 'auth/email-already-in-use':'このメールアドレスは登録済みです',
+  'auth/weak-password':'パスワードは6文字以上にしてください', 'auth/invalid-email':'メールアドレスの形式が正しくありません',
+  'auth/popup-closed-by-user':'ログインがキャンセルされました', 'auth/unauthorized-domain':'このドメインはFirebaseで許可されていません（承認済みドメインを確認）',
+  'auth/operation-not-allowed':'このログイン方法はFirebaseで有効になっていません',
+};
+const authErr = e => { $('authErr').textContent = AUTH_ERR[e.code] || `ログインできませんでした（${e.code||e.message}）`; };
+$('btnGoogle').onclick = () => signInWithPopup(auth, new GoogleAuthProvider()).catch(authErr);
+$('emailForm').onsubmit = e => { e.preventDefault(); $('authErr').textContent=''; signInWithEmailAndPassword(auth, $('email').value.trim(), $('pass').value).catch(authErr); };
+$('btnSignup').onclick = () => { $('authErr').textContent=''; createUserWithEmailAndPassword(auth, $('email').value.trim(), $('pass').value).catch(authErr); };
+$('btnLogout').onclick = () => signOut(auth);
+
+function stopApp() { unsubDays?.(); unsubSet?.(); unsubDays = unsubSet = null; S.days = {}; S.uid = null; }
+
+function startApp() {
+  $('auth').classList.add('hidden'); $('app').classList.remove('hidden'); $('tabs').classList.remove('hidden');
+  $('accName').innerHTML = `${esc(S.user.displayName || S.user.email || '')}<small>${esc(S.user.email||'')}</small>`;
+  $('ver').textContent = VERSION;
+  const from = addDays(todayStr(), -400);
+  unsubDays = onSnapshot(query(collection(db,'users',S.uid,'days'), where('date','>=',from)), snap => {
+    snap.docChanges().forEach(ch => {
+      if (ch.type === 'removed') delete S.days[ch.doc.id]; else S.days[ch.doc.id] = ch.doc.data();
+    });
+    render();
+  }, e => { console.error(e); toast('データを読み込めませんでした'); });
+  unsubSet = onSnapshot(setRef(), snap => {
+    const d = snap.data();
+    S.settings = { ...structuredClone(DEFAULT_SETTINGS), ...(d||{}) };
+    render();
+  });
+  render();
+}
+
+// ═══════════════════════════════════════════════
+//  画面切替・日付
+// ═══════════════════════════════════════════════
+document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => go(b.dataset.v));
+function go(v) {
+  S.view = v;
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  document.querySelectorAll('section.view').forEach(s => s.classList.toggle('on', s.id === 'v-'+v));
+  window.scrollTo(0,0);
+  render();
+}
+$('dPrev').onclick = () => { S.date = addDays(S.date, -1); render(); };
+$('dNext').onclick = () => { if (S.date < todayStr()) { S.date = addDays(S.date, 1); render(); } };
+
+function render() {
+  if (!S.uid) return;
+  $('datebar').classList.toggle('hidden', S.view !== 'log');
+  const d = parseDs(S.date);
+  $('dLabel').innerHTML = `${d.getMonth()+1}/${d.getDate()}<small>(${WD[d.getDay()]})</small>` + (S.date===todayStr() ? '' : '');
+  $('dNext').disabled = S.date >= todayStr();
+  if (S.view === 'home') renderHome();
+  if (S.view === 'log') renderLog();
+  if (S.view === 'set') renderSettings();
+  document.querySelectorAll('section.view').forEach(s => s.classList.toggle('on', s.id === 'v-'+S.view));
+}
+
+// ═══════════════════════════════════════════════
+//  記録：体組成
+// ═══════════════════════════════════════════════
+function latestBody(before) {
+  // before より前（同日含まず）で最新の体組成
+  const keys = Object.keys(S.days).filter(k => k < before && S.days[k].weight != null).sort();
+  return keys.length ? S.days[keys[keys.length-1]] : null;
+}
+function renderBody() {
+  const day = S.days[S.date] || {};
+  const saved = day.weight != null;
+  const prev = latestBody(S.date);
+  // 日付が変わった時、または保存済みで編集中でない時は、保存値（なければ前回値）を表示
+  if (S.bodyDraftDate !== S.date || !S.bodyDraft || (saved && !S._bodyDirty)) {
+    const src = saved ? day : (prev || {});
+    S.bodyDraft = Object.fromEntries(BODY_FIELDS.map(f => [f.key, src[f.key] ?? f.def]));
+    S.bodyDraftDate = S.date;
+    S._bodyDirty = false;
+  }
+  $('bodyRows').innerHTML = BODY_FIELDS.map(f => `
+    <div class="bodyrow">
+      <div class="nm">${f.name}<span class="prev num">${prev && prev[f.key]!=null ? '前回 '+prev[f.key].toFixed(1) : ''}</span></div>
+      <div class="stepper ${saved?'':'unsaved'}" data-k="${f.key}">
+        <button data-d="-1">−1</button><button class="big" data-d="-0.1">−</button>
+        <div class="val">${S.bodyDraft[f.key].toFixed(1)}<small>${f.unit}</small></div>
+        <button class="big" data-d="0.1">＋</button><button data-d="1">+1</button>
+      </div>
+    </div>`).join('');
+  $('bodySave').classList.toggle('hidden', saved);
+  $('bodyNote').textContent = saved ? '記録済み（変更すると自動で保存）' : (prev ? '前回の値を表示中' : '');
+  $('bodyRows').querySelectorAll('.stepper').forEach(st => {
+    const f = BODY_FIELDS.find(x => x.key === st.dataset.k);
+    st.querySelectorAll('button').forEach(b => holdRepeat(b, () => {
+      const v = Math.min(f.max, Math.max(f.min, r1(S.bodyDraft[f.key] + Number(b.dataset.d))));
+      S.bodyDraft[f.key] = v; S._bodyDirty = true;
+      st.querySelector('.val').innerHTML = `${v.toFixed(1)}<small>${f.unit}</small>`;
+      if ((S.days[S.date]||{}).weight != null) queueBodySave();
+    }));
+  });
+}
+let bodyT;
+function queueBodySave() {
+  clearTimeout(bodyT);
+  const date = S.date, draft = { ...S.bodyDraft };
+  bodyT = setTimeout(() => { S._bodyDirty = false; saveDay(date, draft); toast('体組成を保存しました'); }, 900);
+}
+$('bodySave').onclick = () => { S._bodyDirty = false; saveDay(S.date, { ...S.bodyDraft }); toast('体組成を記録しました'); };
+
+// ═══════════════════════════════════════════════
+//  記録：飲酒
+// ═══════════════════════════════════════════════
+function renderAlcohol() {
+  const a = (S.days[S.date]||{}).alcohol;
+  $('alcNo').classList.toggle('on', a === false);
+  $('alcYes').classList.toggle('on', a === true);
+}
+function setAlcohol(v) {
+  const cur = (S.days[S.date]||{}).alcohol;
+  saveDay(S.date, { alcohol: cur === v ? deleteField() : v });
+}
+$('alcNo').onclick = () => setAlcohol(false);
+$('alcYes').onclick = () => setAlcohol(true);
+
+// ═══════════════════════════════════════════════
+//  記録：筋トレ
+// ═══════════════════════════════════════════════
+const activeEx = () => (S.settings.exercises || []).filter(e => e.on !== false);
+const fmtVal = (ex, v) => ex.type === 'time' ? `${v}<small>秒</small>` : `${v}<small>回</small>`;
+function targetText(ex) {
+  const amt = ex.type === 'time'
+    ? (ex.targetMax > ex.target ? `${ex.target}〜${ex.targetMax}秒` : `${ex.target}秒`)
+    : (ex.targetMax > ex.target ? `${ex.target}〜${ex.targetMax}回` : `${ex.target}回`);
+  const sets = ex.setsMax > ex.setsMin ? `${ex.setsMin}〜${ex.setsMax}` : `${ex.setsMin}`;
+  return `${ex.sides ? '左右' : ''}${amt}×${sets}セット`;
+}
+const daySets = (day, id) => ((day||{}).sets||{})[id] || [];
+function exDone(day, ex) { return daySets(day, ex.id).length >= ex.setsMin; }
+
+function renderExercises() {
+  const day = S.days[S.date] || {};
+  const list = activeEx();
+  const done = list.filter(ex => exDone(day, ex)).length;
+  $('exSummary').textContent = `${done} / ${list.length} 種目`;
+  $('exList').innerHTML = list.map(ex => {
+    const sets = daySets(day, ex.id);
+    if (S.exVal[ex.id] == null) S.exVal[ex.id] = sets.length ? sets[sets.length-1] : ex.target;
+    const slots = Math.max(ex.setsMax, sets.length);
+    const chips = Array.from({length:slots}, (_,i) => {
+      if (i < sets.length) return `<div class="s ${i>=ex.setsMax?'extra':'done'}">${sets[i]}${ex.type==='time'?'s':''}</div>`;
+      return `<div class="s">${i < ex.setsMin ? '' : '+'}</div>`;
+    }).join('');
+    const time = ex.type === 'time';
+    return `
+      <div class="ex" data-id="${ex.id}">
+        <div class="ex-head"><span class="nm">${esc(ex.name)}</span><span class="tg">${targetText(ex)}</span>${exDone(day,ex)?'<span class="ok">DONE</span>':''}</div>
+        <div class="sets">${chips}</div>
+        <div class="ex-ctrl ${time?'time':''}">
+          <button data-a="dec">−</button>
+          <div class="v">${fmtVal(ex, S.exVal[ex.id])}</div>
+          <button data-a="inc">＋</button>
+          ${time ? `<button class="tm" data-a="timer" aria-label="タイマー"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg></button>` : ''}
+          <button class="go" data-a="add">${ex.sides ? '左右 完了' : 'セット完了'}</button>
+        </div>
+        <div class="ex-foot"><button class="linkbtn" data-a="undo" ${sets.length?'':'disabled'}>最後のセットを取り消す</button></div>
+      </div>`;
+  }).join('') || '<div class="label">設定で種目を追加してください</div>';
+
+  $('exList').querySelectorAll('.ex').forEach(el => {
+    const ex = list.find(e => e.id === el.dataset.id);
+    const step = ex.type === 'time' ? 5 : 1;
+    const upd = () => el.querySelector('.v').innerHTML = fmtVal(ex, S.exVal[ex.id]);
+    holdRepeat(el.querySelector('[data-a=dec]'), () => { S.exVal[ex.id] = Math.max(step, S.exVal[ex.id]-step); upd(); });
+    holdRepeat(el.querySelector('[data-a=inc]'), () => { S.exVal[ex.id] = Math.min(ex.type==='time'?600:200, S.exVal[ex.id]+step); upd(); });
+    el.querySelector('[data-a=add]').onclick = () => addSet(ex, S.exVal[ex.id]);
+    el.querySelector('[data-a=undo]').onclick = () => {
+      const sets = daySets(S.days[S.date], ex.id).slice(0,-1);
+      saveDay(S.date, { sets: { [ex.id]: sets.length ? sets : deleteField() } });
+    };
+    el.querySelector('[data-a=timer]')?.addEventListener('click', () => openTimer(ex));
+  });
+}
+function addSet(ex, v) {
+  const sets = [...daySets(S.days[S.date], ex.id), v];
+  saveDay(S.date, { sets: { [ex.id]: sets } });
+  if (navigator.vibrate) navigator.vibrate(15);
+  if (sets.length === ex.setsMin) toast(`${ex.name} 完了！`);
+}
+
+// タイマー（プランク用）
+let tm = null;
+function openTimer(ex) {
+  tm = { ex, start: Date.now(), id: null };
+  $('tName').textContent = ex.name + (ex.sides ? '（左右）' : '');
+  $('tTarget').textContent = `目標 ${ex.targetMax > ex.target ? ex.target+'〜'+ex.targetMax : ex.target}秒`;
+  $('timer').classList.remove('hidden');
+  const tick = () => { const s = Math.floor((Date.now()-tm.start)/1000); $('tSec').textContent = s; $('tSec').classList.toggle('hit', s >= ex.target);
+    if (s >= ex.target && !tm.buzzed) { tm.buzzed = true; navigator.vibrate?.([80,60,80]); } };
+  tick(); tm.id = setInterval(tick, 200);
+  try { navigator.wakeLock?.request('screen').then(l => tm && (tm.lock = l)).catch(()=>{}); } catch(e) {}
+}
+function closeTimer() { clearInterval(tm?.id); tm?.lock?.release?.(); tm = null; $('timer').classList.add('hidden'); }
+$('tCancel').onclick = closeTimer;
+$('tStop').onclick = () => {
+  const s = Math.round((Date.now()-tm.start)/1000), ex = tm.ex;
+  closeTimer();
+  if (s < 3) return;
+  S.exVal[ex.id] = s; addSet(ex, s);
+};
+
+function renderLog() { renderBody(); renderAlcohol(); renderExercises(); }
+
+// ═══════════════════════════════════════════════
+//  ホーム
+// ═══════════════════════════════════════════════
+const hasStrength = day => Object.values((day||{}).sets||{}).some(a => a.length);
+const setCount = day => Object.values((day||{}).sets||{}).reduce((n,a) => n + a.length, 0);
+const hasRide = day => !!(day && day.rides && day.rides.length);   // 段階2で使用
+
+function streak(test, allowTodayEmpty = true) {
+  let n = 0, d = todayStr();
+  if (allowTodayEmpty && !test(S.days[d])) d = addDays(d, -1);
+  while (test(S.days[d])) { n++; d = addDays(d, -1); }
+  return n;
+}
+function bestStreak(test) {
+  const keys = Object.keys(S.days).sort();
+  if (!keys.length) return 0;
+  let best = 0, cur = 0, d = keys[0];
+  const end = todayStr();
+  while (d <= end) { if (test(S.days[d])) { cur++; best = Math.max(best, cur); } else cur = 0; d = addDays(d, 1); }
+  return best;
+}
+function rangeStats(from, to) {
+  let strengthDays=0, sets=0, sober=0, drink=0, bodyDays=0;
+  for (let d = from; d <= to; d = addDays(d,1)) {
+    const x = S.days[d]; if (!x) continue;
+    if (hasStrength(x)) strengthDays++;
+    sets += setCount(x);
+    if (x.alcohol === false) sober++;
+    if (x.alcohol === true) drink++;
+    if (x.weight != null) bodyDays++;
+  }
+  return { strengthDays, sets, sober, drink, bodyDays };
+}
+
+function renderHome() {
+  const t = todayStr(), day = S.days[t] || {};
+  const d = new Date();
+  $('hToday').textContent = `${d.getMonth()+1}/${d.getDate()} (${WD[d.getDay()]})`;
+  // 今日タイル
+  const prev = latestBody(t);
+  let wHtml = '<span style="color:var(--dim)">—</span>', wSub = '未記録';
+  if (day.weight != null) {
+    wHtml = `${day.weight.toFixed(1)}<small>kg</small>`;
+    if (prev) { const df = r1(day.weight - prev.weight); wSub = `<span class="${df>0?'up':df<0?'down':''}">${df>0?'+':''}${df.toFixed(1)}</span> 前回比`; } else wSub = '';
+  }
+  const alc = day.alcohol === false ? '<span style="color:var(--sober)">なし</span>' : day.alcohol === true ? '<span style="color:var(--drink)">あり</span>' : '<span style="color:var(--dim)">—</span>';
+  const list = activeEx(), done = list.filter(ex => exDone(day, ex)).length;
+  $('todayTiles').innerHTML = `
+    <button class="t" data-go="log"><div class="k">体重</div><div class="v">${wHtml}</div><div class="sub">${wSub}</div></button>
+    <button class="t" data-go="log"><div class="k">飲酒</div><div class="v" style="font-size:24px">${alc}</div><div class="sub">${day.alcohol==null?'未記録':''}</div></button>
+    <button class="t" data-go="log"><div class="k">筋トレ</div><div class="v" style="${done&&done===list.length?'color:var(--strength)':''}">${done}<small>/${list.length}</small></div><div class="sub">${setCount(day)} セット</div></button>`;
+  $('todayTiles').querySelectorAll('[data-go]').forEach(b => b.onclick = () => { S.date = t; go('log'); });
+  $('todayTiles').querySelectorAll('.t').forEach(b => b.style.textAlign = 'left');
+
+  // 連続
+  const sober = x => x && x.alcohol === false;
+  const str = x => hasStrength(x);
+  const rec = x => x && (x.weight != null || x.alcohol != null || hasStrength(x) || hasRide(x));
+  const items = [
+    { k:'休肝日', c:'var(--sober)', n:streak(sober), b:bestStreak(sober) },
+    { k:'筋トレ', c:'var(--strength)', n:streak(str), b:bestStreak(str) },
+    { k:'記録', c:'var(--accent)', n:streak(rec), b:bestStreak(rec) },
+  ];
+  $('streaks').innerHTML = items.map(i => `<div class="streak" style="--c:${i.c}"><div class="k">${i.k}</div><div class="v">${i.n}<small>日</small></div><div class="best num">最長 ${i.b}日</div></div>`).join('');
+
+  // 積み上げ
+  const dd = parseDs(t);
+  const wFrom = addDays(t, -((dd.getDay()+6)%7));      // 月曜始まり
+  const mFrom = `${t.slice(0,7)}-01`;
+  const yFrom = `${t.slice(0,4)}-01-01`;
+  const W = rangeStats(wFrom, t), M = rangeStats(mFrom, t), Y = rangeStats(yFrom, t);
+  const row = (k, f, u) => `<tr><th>${k}</th>${[W,M,Y].map(s => `<td>${f(s)}<small>${u}</small></td>`).join('')}</tr>`;
+  $('totals').innerHTML = `<thead><tr><th></th><th>今週</th><th>今月</th><th>今年</th></tr></thead><tbody>
+    ${row('筋トレ', s=>s.strengthDays, '日')}
+    ${row('セット数', s=>s.sets, '')}
+    ${row('休肝日', s=>s.sober, '日')}
+    ${row('飲酒', s=>s.drink, '日')}
+    ${row('ライド', ()=>'—', '')}
+  </tbody>`;
+
+  renderHeat();
+}
+
+const HEAT_MODES = [
+  { id:'all',      label:'総合',   c:'var(--accent)',   rgb:'200,245,96' },
+  { id:'strength', label:'筋トレ', c:'var(--strength)', rgb:'255,138,76' },
+  { id:'sober',    label:'休肝日', c:'var(--sober)',    rgb:'61,220,151' },
+  { id:'body',     label:'体組成', c:'var(--body)',     rgb:'169,139,255' },
+];
+function heatLevel(mode, x) {
+  if (!x) return 0;
+  if (mode === 'strength') { const n = setCount(x); return n === 0 ? 0 : n < 5 ? 1 : n < 10 ? 2 : n < 13 ? 3 : 4; }
+  if (mode === 'sober') return x.alcohol === false ? 4 : x.alcohol === true ? -1 : 0;
+  if (mode === 'body') return x.weight != null ? 4 : 0;
+  // 総合：達成した項目の数
+  return (hasStrength(x)?1:0) + (x.alcohol===false?1:0) + (x.weight!=null?1:0) + (hasRide(x)?1:0);
+}
+function heatColor(mode, lv) {
+  const m = HEAT_MODES.find(h => h.id === mode);
+  if (lv === -1) return 'rgba(255,93,108,.35)';
+  if (lv <= 0) return '';
+  return `rgba(${m.rgb},${[0,.28,.5,.75,1][lv]})`;
+}
+function renderHeat() {
+  $('heatChips').innerHTML = HEAT_MODES.map(m => `<button data-m="${m.id}" style="--c:${m.c}" class="${S.heatMode===m.id?'on':''}">${m.label}</button>`).join('');
+  $('heatChips').querySelectorAll('button').forEach(b => b.onclick = () => { S.heatMode = b.dataset.m; renderHeat(); });
+  const t = todayStr(), td = parseDs(t);
+  const endMon = addDays(t, -((td.getDay()+6)%7));
+  const start = addDays(endMon, -52*7);
+  let html = '', lastM = -1, col = 0;
+  for (let w = start; w <= t; w = addDays(w, 7), col++) {
+    const m = parseDs(w).getMonth();
+    html += `<div class="m" style="grid-column:${col+1}">${m !== lastM && col < 52 ? (m+1)+'月' : ''}</div>`;
+    lastM = m;
+    for (let i = 0; i < 7; i++) {
+      const d = addDays(w, i);
+      if (d > t) { html += `<div class="c f" style="grid-column:${col+1};grid-row:${i+2}"></div>`; continue; }
+      const lv = heatLevel(S.heatMode, S.days[d]);
+      const bg = heatColor(S.heatMode, lv);
+      html += `<button class="c${d===t?' today':''}" data-d="${d}" style="grid-column:${col+1};grid-row:${i+2};${bg?'background:'+bg:''}" aria-label="${d}"></button>`;
+    }
+  }
+  $('heat').innerHTML = html;
+  $('heat').querySelectorAll('button.c').forEach(b => b.onclick = () => { S.date = b.dataset.d; go('log'); });
+  const wrap = $('heatWrap'); wrap.scrollLeft = wrap.scrollWidth;
+  const m = HEAT_MODES.find(h => h.id === S.heatMode);
+  $('legend').innerHTML = S.heatMode === 'sober'
+    ? `<i style="background:${heatColor('sober',4)}"></i>休肝日 <i style="background:${heatColor('sober',-1)};margin-left:8px"></i>飲酒`
+    : `少 ${[0,1,2,3,4].map(l => `<i style="background:${heatColor(m.id,l)||'var(--heat0)'}"></i>`).join('')} 多`;
+}
+
+// ═══════════════════════════════════════════════
+//  設定
+// ═══════════════════════════════════════════════
+const ZONE_COLORS = ['#7b8794','#3ddc97','#ffd23f','#ff8a4c','#ff5d6c'];
+function renderSettings() {
+  const st = S.settings, z = st.zones, max = st.maxHR;
+  const bounds = [Math.round(max*0.5), ...z, max];
+  $('zoneBar').innerHTML = ZONE_COLORS.map((c,i) => `<i style="background:${c};flex:${Math.max(1,bounds[i+1]-bounds[i])}"></i>`).join('');
+  const zrows = [
+    { k:'max', nm:'最大心拍', sub:'', v:max },
+    ...z.map((v,i) => ({ k:i, nm:`Z${i+1} 上限`, sub:`Z${i+1}：${i===0?'〜':(z[i-1]+1)+'〜'}${v} bpm`, v, c:ZONE_COLORS[i] })),
+  ];
+  $('zoneRows').innerHTML = zrows.map(r => `
+    <div class="srow"><div class="nm">${r.c?`<span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${r.c};margin-right:6px"></span>`:''}${r.nm}<small class="num">${r.sub || (r.k==='max' ? 'Z5：'+(z[3]+1)+'〜'+max+' bpm' : '')}</small></div>
+      <div class="mini" data-k="${r.k}"><button data-d="-1">−</button><div class="v">${r.v}</div><button data-d="1">＋</button></div></div>`).join('');
+  $('zoneRows').querySelectorAll('.mini').forEach(el => el.querySelectorAll('button').forEach(b => holdRepeat(b, () => {
+    const k = el.dataset.k, dlt = Number(b.dataset.d);
+    if (k === 'max') { S.settings.maxHR = Math.min(230, Math.max(z[3]+1, S.settings.maxHR + dlt)); }
+    else { const i = Number(k), lo = i ? z[i-1]+1 : 60, hi = i < 3 ? z[i+1]-1 : S.settings.maxHR-1; z[i] = Math.min(hi, Math.max(lo, z[i]+dlt)); }
+    el.querySelector('.v').textContent = k === 'max' ? S.settings.maxHR : z[Number(k)];
+    queueSettingsSave(true);
+  })));
+  renderExSettings();
+}
+let setT;
+function queueSettingsSave(rerender) {
+  clearTimeout(setT);
+  setT = setTimeout(() => { saveSettings({ maxHR:S.settings.maxHR, zones:S.settings.zones, exercises:S.settings.exercises }); if (rerender) renderSettings(); }, 700);
+}
+
+function renderExSettings() {
+  const exs = S.settings.exercises;
+  $('exSettings').innerHTML = exs.map((ex, i) => `
+    <div class="exs" data-i="${i}">
+      <div class="top">
+        <button class="toggle ${ex.on!==false?'on':''}" data-a="on" aria-label="使う"></button>
+        <span class="nm" style="${ex.on===false?'color:var(--dim)':''}">${esc(ex.name)}</span>
+        <span class="tg">${targetText(ex)}</span>
+        <button class="iconbtn" data-a="edit" style="width:36px;height:36px" aria-label="編集"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="${S.editEx===i?'M18 15l-6-6-6 6':'M6 9l6 6 6-6'}"/></svg></button>
+      </div>
+      ${S.editEx === i ? `
+      <div class="edit">
+        <input value="${esc(ex.name)}" data-a="name" maxlength="20" placeholder="種目名">
+        <div class="seg"><button data-a="type" data-v="reps" class="${ex.type==='reps'?'on':''}">回数</button><button data-a="type" data-v="time" class="${ex.type==='time'?'on':''}">秒数</button></div>
+        <div class="seg"><button data-a="sides" data-v="0" class="${!ex.sides?'on':''}">左右なし</button><button data-a="sides" data-v="1" class="${ex.sides?'on':''}">左右</button></div>
+        ${[['target', ex.type==='time'?'目標（秒）':'目標（回）', ex.type==='time'?5:1],['targetMax', ex.type==='time'?'目標上限（秒）':'目標上限（回）', ex.type==='time'?5:1],['setsMin','セット数（最低）',1],['setsMax','セット数（上限）',1]].map(([k,l,s]) =>
+          `<div class="srow"><div class="nm">${l}</div><div class="mini" data-k="${k}" data-s="${s}"><button data-d="-1">−</button><div class="v">${ex[k]}</div><button data-d="1">＋</button></div></div>`).join('')}
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+          <button class="btn ghost" data-a="up" ${i===0?'disabled':''}>↑ 上へ</button>
+          <button class="btn ghost" data-a="down" ${i===exs.length-1?'disabled':''}>↓ 下へ</button>
+          <button class="btn danger" data-a="del">削除</button>
+        </div>
+      </div>` : ''}
+    </div>`).join('');
+
+  $('exSettings').querySelectorAll('.exs').forEach(el => {
+    const i = Number(el.dataset.i), ex = exs[i];
+    const q = a => el.querySelectorAll(`[data-a=${a}]`);
+    q('on')[0].onclick = () => { ex.on = ex.on === false; queueSettingsSave(); renderExSettings(); };
+    q('edit')[0].onclick = () => { S.editEx = S.editEx === i ? null : i; renderExSettings(); };
+    if (S.editEx !== i) return;
+    q('name')[0].onchange = e => { ex.name = e.target.value.trim() || ex.name; queueSettingsSave(); renderExSettings(); };
+    q('type').forEach(b => b.onclick = () => { if (ex.type !== b.dataset.v) { ex.type = b.dataset.v; ex.target = ex.targetMax = ex.type==='time' ? 30 : 10; queueSettingsSave(); renderExSettings(); } });
+    q('sides').forEach(b => b.onclick = () => { ex.sides = b.dataset.v === '1'; queueSettingsSave(); renderExSettings(); });
+    el.querySelectorAll('.mini').forEach(m => m.querySelectorAll('button').forEach(b => holdRepeat(b, () => {
+      const k = m.dataset.k, step = Number(m.dataset.s) * Number(b.dataset.d);
+      ex[k] = Math.max(1, ex[k] + step);
+      if (k === 'target' && ex.targetMax < ex.target) ex.targetMax = ex.target;
+      if (k === 'targetMax' && ex.targetMax < ex.target) ex.targetMax = ex.target;
+      if (k === 'setsMin' && ex.setsMax < ex.setsMin) ex.setsMax = ex.setsMin;
+      if (k === 'setsMax' && ex.setsMax < ex.setsMin) ex.setsMax = ex.setsMin;
+      el.querySelectorAll('.mini').forEach(mm => mm.querySelector('.v').textContent = ex[mm.dataset.k]);
+      el.querySelector('.tg').textContent = targetText(ex);
+      queueSettingsSave();
+    })));
+    q('up')[0].onclick = () => { [exs[i-1], exs[i]] = [exs[i], exs[i-1]]; S.editEx = i-1; queueSettingsSave(); renderExSettings(); };
+    q('down')[0].onclick = () => { [exs[i+1], exs[i]] = [exs[i], exs[i+1]]; S.editEx = i+1; queueSettingsSave(); renderExSettings(); };
+    let armed = false;
+    q('del')[0].onclick = e => {
+      if (!armed) { armed = true; e.target.textContent = 'もう一度で削除'; setTimeout(() => { armed = false; e.target.textContent = '削除'; }, 2500); return; }
+      exs.splice(i, 1); S.editEx = null; queueSettingsSave(); renderExSettings();
+    };
+  });
+}
+$('exAdd').onclick = () => {
+  const id = 'ex' + Date.now().toString(36);
+  S.settings.exercises.push({ id, name:'新しい種目', type:'reps', sides:false, setsMin:3, setsMax:3, target:10, targetMax:10, on:true });
+  S.editEx = S.settings.exercises.length - 1;
+  queueSettingsSave(); renderExSettings();
+};
+
+// 日付が変わったら今日に追従（アプリを開きっぱなしの場合）
+let lastToday = todayStr();
+setInterval(() => { const t = todayStr(); if (t !== lastToday) { if (S.date === lastToday) S.date = t; lastToday = t; render(); } }, 60000);
+
+// PWA
+if ('serviceWorker' in navigator && !USE_EMU) navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+go('home');
+</script>
+</body>
+</html>
