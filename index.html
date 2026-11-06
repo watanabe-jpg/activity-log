@@ -29,6 +29,7 @@
   --text:#e9eef3; --muted:#8a96a3; --dim:#5a6570;
   --accent:#c8f560; --accent-ink:#141a05;
   --ride:#4fd1e8; --strength:#ff8a4c; --sober:#3ddc97; --drink:#ff5d6c; --body:#a98bff;
+  --walk:#ffc24b; --bp:#ff6f9c;
   --heat0:#1a1f25; --accent-t:#c8f560; --navbg:rgba(11,13,16,.92); --shadow:none;
   --r:16px;
   --num:'Barlow Condensed', -apple-system, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
@@ -40,6 +41,7 @@
   --text:#151a20; --muted:#5b6672; --dim:#8b96a1;
   --accent:#c8f560; --accent-ink:#141a05; --accent-t:#5a8500;
   --ride:#0e9fbb; --strength:#e5642a; --sober:#10a468; --drink:#e2374a; --body:#7656e3;
+  --walk:#c98700; --bp:#d23c70;
   --heat0:#e7ebef; --navbg:rgba(255,255,255,.92); --shadow:0 1px 3px rgba(20,26,32,.06);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -56,6 +58,8 @@ input,select{font:inherit;color:var(--text);background:var(--surface2);border:1p
 header.top{display:flex;align-items:center;justify-content:space-between;height:52px}
 .brand{font-family:var(--num);font-weight:700;font-size:24px;letter-spacing:.08em}
 .brand b{color:var(--accent-t)}
+.brand .ver{font-size:12px;color:var(--dim);margin-left:6px;letter-spacing:0;font-weight:600}
+@media (max-width:420px){ .brand{line-height:1} .brand .ver{display:block;margin:2px 0 0;font-size:10px} }
 .datebar{display:flex;align-items:center;gap:4px}
 .datebar .d{font-family:var(--num);font-size:22px;font-weight:600;min-width:118px;text-align:center}
 .datebar .d small{font-family:inherit;font-size:14px;color:var(--muted);margin-left:2px}
@@ -64,7 +68,7 @@ header.top{display:flex;align-items:center;justify-content:space-between;height:
 .iconbtn svg{width:20px;height:20px}
 nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--navbg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   border-top:1px solid var(--line);padding-bottom:var(--safe-b);z-index:20}
-nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
 nav.tabs button{height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--dim);font-size:11px;font-weight:600}
 nav.tabs button svg{width:24px;height:24px}
 nav.tabs button.on{color:var(--accent-t)}
@@ -142,7 +146,7 @@ section.view.on{display:block}
 .today .t .v small{font-size:13px;color:var(--muted)}
 .today .t .sub{font-size:11px;color:var(--dim);font-family:var(--num)}
 .up{color:var(--drink)} .down{color:var(--sober)}
-.streaks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.streaks{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
 .streak{border-radius:12px;padding:12px 10px;background:var(--surface2);position:relative;overflow:hidden}
 .streak::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c)}
 .streak .k{font-size:11px;color:var(--muted);font-weight:600}
@@ -169,6 +173,33 @@ section.view.on{display:block}
 .heat .c.today{outline:1.5px solid var(--text);outline-offset:0}
 .legend{display:flex;align-items:center;gap:4px;justify-content:flex-end;font-size:11px;color:var(--dim);margin-top:10px}
 .legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+/* ── walk / bp ── */
+.walk-time{display:grid;grid-template-columns:56px 1fr 56px;gap:6px;align-items:center;margin:10px 0 8px}
+.walk-time button{height:48px;border-radius:12px;background:var(--surface2);font-family:var(--num);font-size:18px;font-weight:600}
+.walk-time .v{text-align:center;font-size:32px;font-weight:600;line-height:1}
+.walk-time .v small{font-size:14px;color:var(--muted);margin-left:2px}
+.walk-pre{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.walk-pre button{height:36px;border-radius:10px;background:var(--surface2);font-family:var(--num);font-size:16px;font-weight:600;color:var(--muted)}
+.walk-pre button.on{background:var(--walk);color:#1d1400}
+.dogs{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.dog{height:52px;border-radius:14px;background:var(--surface2);border:2px solid transparent;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;gap:6px;color:var(--muted)}
+.dog svg{width:20px;height:20px}
+.dog.on{border-color:var(--walk);color:var(--walk);background:rgba(255,194,75,.1)}
+.btn.walkbtn{background:var(--walk);color:#1d1400}
+.walk-row{display:grid;grid-template-columns:28px 52px 1fr auto;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.walk-row:first-child{margin-top:8px}
+.walk-row .slot{font-weight:800;color:var(--walk)}
+.walk-row .num{font-size:18px;font-weight:600}
+.walk-row .dn{color:var(--muted);font-size:13px}
+.bp-other{font-size:12px;color:var(--dim);text-align:right;margin-top:6px;font-family:var(--num)}
+.seg.slot{margin-bottom:6px}
+
+/* ── trend ── */
+.tchart{height:240px}
+.chips.small button{height:28px;font-size:11px}
+.tsum{font-family:var(--num);font-size:15px;color:var(--text);font-weight:600;letter-spacing:0}
+.empty{display:grid;place-items:center;height:120px;color:var(--dim);font-size:13px}
 
 /* ── ride ── */
 .ride-row{display:grid;grid-template-columns:60px 1fr auto;gap:12px;align-items:center;width:100%;text-align:left;padding:12px 0;border-top:1px solid var(--line)}
@@ -228,6 +259,30 @@ section.view.on{display:block}
 .toggle.on{background:var(--accent)}
 .toggle.on::after{left:23px;background:var(--accent-ink)}
 
+/* ── PC・タブレット横（900px以上） ── */
+@media (min-width:900px){
+  #app{max-width:1160px;padding:76px 24px 48px}
+  header.top{position:fixed;top:0;left:max(24px, calc((100vw - 1160px) / 2 + 24px));height:64px;z-index:21;gap:28px;justify-content:flex-start}
+  nav.tabs{top:0;bottom:auto;border-top:0;border-bottom:1px solid var(--line);padding-bottom:0}
+  nav.tabs .in{max-width:1160px;height:64px;display:flex;justify-content:flex-end;align-items:center;gap:2px;padding:0 24px}
+  nav.tabs button{height:40px;flex-direction:row;gap:8px;padding:0 14px;border-radius:12px;font-size:14px}
+  nav.tabs button svg{width:20px;height:20px}
+  nav.tabs button.on{background:var(--surface);box-shadow:var(--shadow)}
+  section.view.cols.on{column-count:2;column-gap:16px}
+  section.view.cols .card{break-inside:avoid;display:inline-block;width:100%}
+  section.view.cols .card.wide{column-span:all;display:block}
+  #v-trend.on{column-count:auto;display:grid;grid-template-columns:1fr 1fr;gap:0 16px;align-items:start}
+  #v-trend .card{display:block}
+  #v-trend .card.wide{grid-column:1/-1}
+  #v-ride:not(.detail){max-width:760px;margin:0 auto}
+  .ride-cols{display:grid;grid-template-columns:5fr 7fr;gap:16px;align-items:start}
+  #rideMap{height:400px}
+  .chart{height:150px}
+  .tchart{height:300px}
+  .toast{bottom:32px}
+}
+@media (min-width:900px) and (max-width:1040px){ header.top .datebar .d{min-width:96px} nav.tabs button{padding:0 10px} }
+
 /* ── auth ── */
 #auth{max-width:400px;margin:0 auto;padding:calc(var(--safe-t) + 15vh) 24px 40px}
 #auth .logo{font-family:var(--num);font-size:56px;font-weight:700;letter-spacing:.08em;line-height:1}
@@ -271,7 +326,7 @@ section.view.on{display:block}
 <!-- アプリ -->
 <div id="app" class="hidden">
   <header class="top">
-    <div class="brand">ACT<b>LOG</b></div>
+    <div class="brand">ACT<b>LOG</b><span class="ver num" id="verTop"></span></div>
     <div class="datebar" id="datebar">
       <button class="iconbtn" id="dPrev" aria-label="前の日"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
       <div class="d" id="dLabel"></div>
@@ -280,7 +335,7 @@ section.view.on{display:block}
   </header>
 
   <!-- ホーム -->
-  <section class="view" id="v-home">
+  <section class="view cols" id="v-home">
     <div class="card">
       <h2>今日<span class="r num" id="hToday"></span></h2>
       <div class="today" id="todayTiles"></div>
@@ -293,7 +348,7 @@ section.view.on{display:block}
       <h2>積み上げ</h2>
       <table class="totals" id="totals"></table>
     </div>
-    <div class="card">
+    <div class="card wide">
       <h2>1年間</h2>
       <div class="chips" id="heatChips"></div>
       <div class="heat-wrap" id="heatWrap"><div class="heat" id="heat"></div></div>
@@ -302,12 +357,24 @@ section.view.on{display:block}
   </section>
 
   <!-- 記録 -->
-  <section class="view" id="v-log">
+  <section class="view cols" id="v-log">
     <div class="card">
       <h2><span class="dot" style="background:var(--body)"></span>体組成</h2>
       <div id="bodyRows"></div>
       <button class="btn primary" id="bodySave" style="margin-top:10px">この値で記録</button>
       <div class="saved-note" id="bodyNote"></div>
+    </div>
+    <div class="card">
+      <h2><span class="dot" style="background:var(--bp)"></span>血圧<span class="r">mmHg</span></h2>
+      <div class="seg slot" id="bpSlot"><button data-s="am">朝</button><button data-s="pm">夜</button></div>
+      <div id="bpRows"></div>
+      <button class="btn primary" id="bpSave" style="margin-top:10px">この値で記録</button>
+      <div class="saved-note" id="bpNote"></div>
+    </div>
+    <div class="card">
+      <h2><span class="dot" style="background:var(--walk)"></span>散歩<span class="r num" id="walkSum"></span></h2>
+      <div id="walkForm"></div>
+      <div id="walkList"></div>
     </div>
     <div class="card">
       <h2><span class="dot" style="background:var(--sober)"></span>飲酒</h2>
@@ -325,8 +392,11 @@ section.view.on{display:block}
   <!-- ライド -->
   <section class="view" id="v-ride"></section>
 
+  <!-- 推移 -->
+  <section class="view cols" id="v-trend"></section>
+
   <!-- 設定 -->
-  <section class="view" id="v-set">
+  <section class="view cols" id="v-set">
     <div class="card">
       <h2><span class="dot" style="background:var(--drink)"></span>心拍ゾーン</h2>
       <div class="zonebar" id="zoneBar"></div>
@@ -336,6 +406,16 @@ section.view.on{display:block}
       <h2><span class="dot" style="background:var(--strength)"></span>筋トレメニュー</h2>
       <div id="exSettings"></div>
       <button class="btn ghost" id="exAdd" style="margin-top:8px">＋ 種目を追加</button>
+    </div>
+    <div class="card">
+      <h2><span class="dot" style="background:var(--walk)"></span>犬</h2>
+      <div id="dogSettings"></div>
+      <button class="btn ghost" id="dogAdd" style="margin-top:8px">＋ 犬を追加</button>
+    </div>
+    <div class="card">
+      <h2><span class="dot" style="background:var(--bp)"></span>血圧の参考線</h2>
+      <div id="bpRefRows"></div>
+      <div class="label" style="margin-top:6px">推移グラフに表示する線です。かかりつけ医の指示があればそれに合わせてください。</div>
     </div>
     <div class="card">
       <h2><span class="dot" style="background:var(--ride)"></span>ライド</h2>
@@ -355,7 +435,6 @@ section.view.on{display:block}
       <div class="srow"><div class="nm" id="accName"></div></div>
       <button class="btn danger" id="btnLogout" style="margin-top:8px">ログアウト</button>
     </div>
-    <p style="text-align:center;font-size:11px;color:var(--dim)" class="num" id="ver"></p>
   </section>
 </div>
 
@@ -363,6 +442,7 @@ section.view.on{display:block}
   <button data-v="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>ホーム</button>
   <button data-v="log"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>記録</button>
   <button data-v="ride"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M15 6h2l3 11M5.5 17l4-8h7M9 6h3l3.5 11"/></svg>ライド</button>
+  <button data-v="trend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>推移</button>
   <button data-v="set"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>設定</button>
 </div></nav>
 
@@ -402,7 +482,7 @@ import {
   writeBatch, arrayUnion, arrayRemove,
 } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
 
-const VERSION = 'v1.2.0（段階2：ライドログ）';
+const VERSION = 'v1.3.0';
 
 // localhost で ?emu を付けて開くとFirebaseエミュレータに接続（開発用）
 const USE_EMU = ['localhost','127.0.0.1'].includes(location.hostname) && new URLSearchParams(location.search).has('emu');
@@ -431,7 +511,8 @@ const DEFAULT_EXERCISES = [
   { id:'plank',     name:'プランク',       type:'time', sides:false, setsMin:3, setsMax:3, target:45, targetMax:60, on:true },
   { id:'sideplank', name:'サイドプランク', type:'time', sides:true,  setsMin:2, setsMax:2, target:30, targetMax:30, on:true },
 ];
-const DEFAULT_SETTINGS = { maxHR:182, zones:[109,138,155,168], exercises:DEFAULT_EXERCISES, privacyM:500 };
+const DEFAULT_DOGS = [ { id:'bb', name:'BB' }, { id:'mari', name:'マリ' } ];
+const DEFAULT_SETTINGS = { maxHR:182, zones:[109,138,155,168], exercises:DEFAULT_EXERCISES, privacyM:500, dogs:DEFAULT_DOGS, bpRef:{ high:[135,85], goal:[125,75] } };
 const BODY_FIELDS = [
   { key:'weight', name:'体重',     unit:'kg', def:65.0, min:30, max:150 },
   { key:'fat',    name:'体脂肪率', unit:'%',  def:20.0, min:3,  max:60 },
@@ -523,7 +604,7 @@ function stopApp() { unsubDays?.(); unsubSet?.(); unsubRides?.(); unsubDays = un
 function startApp() {
   $('auth').classList.add('hidden'); $('app').classList.remove('hidden'); $('tabs').classList.remove('hidden');
   $('accName').innerHTML = `${esc(S.user.displayName || S.user.email || '')}<small>${esc(S.user.email||'')}</small>`;
-  $('ver').textContent = VERSION;
+  $('verTop').textContent = VERSION;
   const from = addDays(todayStr(), -400);
   unsubDays = onSnapshot(query(collection(db,'users',S.uid,'days'), where('date','>=',from)), snap => {
     snap.docChanges().forEach(ch => {
@@ -548,7 +629,8 @@ function startApp() {
 // ═══════════════════════════════════════════════
 document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => go(b.dataset.v));
 function go(v) {
-  if (v === 'ride' || S.view === 'ride') { S.rideOpen = null; S._rideShown = null; disposeRideViz(); }   // ライドタブは常に一覧から
+  if (v === 'ride' || S.view === 'ride') { S.rideOpen = null; S._rideShown = null; disposeRideViz(); }
+  if (v !== 'trend') { trendCharts.forEach(c => c.dispose()); trendCharts = []; }   // ライドタブは常に一覧から
   S.view = v;
   document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
   document.querySelectorAll('section.view').forEach(s => s.classList.toggle('on', s.id === 'v-'+v));
@@ -568,6 +650,7 @@ function render() {
   if (S.view === 'log') renderLog();
   if (S.view === 'set') renderSettings();
   if (S.view === 'ride') renderRides();
+  if (S.view === 'trend') renderTrend();
   document.querySelectorAll('section.view').forEach(s => s.classList.toggle('on', s.id === 'v-'+S.view));
 }
 
@@ -720,7 +803,111 @@ $('tStop').onclick = () => {
   S.exVal[ex.id] = s; addSet(ex, s);
 };
 
-function renderLog() { renderBody(); renderAlcohol(); renderExercises(); }
+// ═══════════════════════════════════════════════
+//  記録：血圧（朝・夜）
+// ═══════════════════════════════════════════════
+const BP_SLOT = { am:'朝', pm:'夜' };
+const BP_FIELDS = [ { key:'sys', name:'最高', min:60, max:250 }, { key:'dia', name:'最低', min:30, max:160 } ];
+function latestBp(before, slot) {
+  const keys = Object.keys(S.days).filter(k => k < before && S.days[k].bp).sort().reverse();
+  for (const k of keys) if (S.days[k].bp[slot]) return S.days[k].bp[slot];
+  for (const k of keys) { const b = S.days[k].bp; if (b.am || b.pm) return b.am || b.pm; }
+  return null;
+}
+function renderBp() {
+  if (S.bpDate !== S.date) { S.bpSlot = (S.date === todayStr() && new Date().getHours() >= 14) ? 'pm' : 'am'; S.bpDate = S.date; S.bpKey = null; }
+  const day = S.days[S.date] || {}, slot = S.bpSlot;
+  const saved = day.bp && day.bp[slot];
+  const key = S.date + slot;
+  if (S.bpKey !== key || (saved && !S._bpDirty)) {
+    const src = saved || latestBp(S.date, slot) || { sys:120, dia:80 };
+    S.bpDraft = { sys:src.sys, dia:src.dia }; S.bpKey = key; S._bpDirty = false;
+  }
+  $('bpSlot').querySelectorAll('button').forEach(b => { b.classList.toggle('on', b.dataset.s === slot); b.onclick = () => { S.bpSlot = b.dataset.s; S.bpKey = null; renderBp(); }; });
+  const prev = latestBp(S.date, slot);
+  $('bpRows').innerHTML = BP_FIELDS.map(f => `
+    <div class="bodyrow">
+      <div class="nm">${f.name}<span class="prev num">${prev ? '前回 ' + prev[f.key] : ''}</span></div>
+      <div class="stepper ${saved?'':'unsaved'}" data-k="${f.key}">
+        <button data-d="-5">−5</button><button class="big" data-d="-1">−</button>
+        <div class="val">${S.bpDraft[f.key]}</div>
+        <button class="big" data-d="1">＋</button><button data-d="5">+5</button>
+      </div>
+    </div>`).join('');
+  const other = day.bp && day.bp[slot === 'am' ? 'pm' : 'am'];
+  $('bpSave').classList.toggle('hidden', !!saved);
+  $('bpNote').innerHTML = (saved ? `${BP_SLOT[slot]}の血圧：記録済み（変更すると自動で保存）` : (prev ? '前回の値を表示中' : ''))
+    + (other ? `<div class="bp-other">${BP_SLOT[slot === 'am' ? 'pm' : 'am']} ${other.sys}/${other.dia}</div>` : '');
+  $('bpRows').querySelectorAll('.stepper').forEach(st => {
+    const f = BP_FIELDS.find(x => x.key === st.dataset.k);
+    st.querySelectorAll('button').forEach(b => holdRepeat(b, () => {
+      S.bpDraft[f.key] = Math.min(f.max, Math.max(f.min, S.bpDraft[f.key] + Number(b.dataset.d)));
+      S._bpDirty = true;
+      st.querySelector('.val').textContent = S.bpDraft[f.key];
+      if (((S.days[S.date]||{}).bp||{})[S.bpSlot]) queueBpSave();
+    }));
+  });
+}
+let bpT;
+function queueBpSave() {
+  clearTimeout(bpT);
+  const date = S.date, slot = S.bpSlot, v = { ...S.bpDraft };
+  bpT = setTimeout(() => { S._bpDirty = false; saveDay(date, { bp: { [slot]: v } }); toast('血圧を保存しました'); }, 900);
+}
+$('bpSave').onclick = () => { S._bpDirty = false; saveDay(S.date, { bp: { [S.bpSlot]: { ...S.bpDraft } } }); toast(`${BP_SLOT[S.bpSlot]}の血圧を記録しました`); };
+
+// ═══════════════════════════════════════════════
+//  記録：散歩
+// ═══════════════════════════════════════════════
+const WALK_SLOT = { am:'朝', pm:'夕' };
+const PAW = '<svg viewBox="0 0 24 24" fill="currentColor"><ellipse cx="6" cy="10" rx="2.2" ry="2.8"/><ellipse cx="10" cy="5.8" rx="2.2" ry="2.8"/><ellipse cx="14.5" cy="5.8" rx="2.2" ry="2.8"/><ellipse cx="18.5" cy="10" rx="2.2" ry="2.8"/><path d="M12.2 11.5c-3 0-6 3.6-6 6.2 0 1.8 1.4 2.5 3 2.5 1.2 0 2-.6 3-.6s1.8.6 3 .6c1.6 0 3-.7 3-2.5 0-2.6-3-6.2-6-6.2z"/></svg>';
+const dogList = () => S.settings.dogs || DEFAULT_DOGS;
+const dogName = id => dogList().find(d => d.id === id)?.name || id;
+const walksOf = day => (day && day.walks) || [];
+const walkMin = day => walksOf(day).reduce((n, w) => n + (w.min || 0), 0);
+const hasWalk = day => walksOf(day).length > 0;
+function renderWalk() {
+  if (S.walkDate !== S.date) {
+    S.walkDraft = { slot: (S.date === todayStr() && new Date().getHours() >= 12) ? 'pm' : 'am', min: 30, dogs: dogList().map(d => d.id) };
+    S.walkDate = S.date;
+  }
+  const w = S.walkDraft, walks = walksOf(S.days[S.date]);
+  $('walkSum').textContent = walks.length ? `${walks.length}回 · ${walkMin(S.days[S.date])}分` : '';
+  $('walkForm').innerHTML = `
+    <div class="seg" id="walkSlot">${Object.entries(WALK_SLOT).map(([k, v]) => `<button data-s="${k}" class="${w.slot === k ? 'on' : ''}">${v}</button>`).join('')}</div>
+    <div class="walk-time"><button data-d="-5">−5</button><div class="v num" id="walkMinV">${w.min}<small>分</small></div><button data-d="5">+5</button></div>
+    <div class="walk-pre">${[15, 30, 45, 60].map(m => `<button data-m="${m}" class="${w.min === m ? 'on' : ''}">${m}分</button>`).join('')}</div>
+    <div class="dogs">${dogList().map(d => `<button class="dog ${w.dogs.includes(d.id) ? 'on' : ''}" data-dog="${esc(d.id)}">${PAW}${esc(d.name)}</button>`).join('')}</div>
+    <button class="btn walkbtn" id="walkAdd">散歩を記録</button>`;
+  $('walkList').innerHTML = walks.map((x, i) => `
+    <div class="walk-row"><span class="slot">${WALK_SLOT[x.slot] || ''}</span><span class="num">${x.min}<small style="font-size:12px;color:var(--muted)">分</small></span>
+      <span class="dn">${(x.dogs || []).map(dogName).map(esc).join('・') || '犬なし'}</span><button class="linkbtn" data-i="${i}">取り消す</button></div>`).join('');
+  const f = $('walkForm');
+  f.querySelectorAll('#walkSlot button').forEach(b => b.onclick = () => { w.slot = b.dataset.s; renderWalk(); });
+  const syncMin = () => { $('walkMinV').innerHTML = `${w.min}<small>分</small>`; f.querySelectorAll('.walk-pre button').forEach(b => b.classList.toggle('on', Number(b.dataset.m) === w.min)); };
+  f.querySelectorAll('.walk-time button').forEach(b => holdRepeat(b, () => { w.min = Math.min(240, Math.max(5, w.min + Number(b.dataset.d))); syncMin(); }));
+  f.querySelectorAll('.walk-pre button').forEach(b => b.onclick = () => { w.min = Number(b.dataset.m); syncMin(); });
+  f.querySelectorAll('.dog').forEach(b => b.onclick = () => {
+    const id = b.dataset.dog; w.dogs = w.dogs.includes(id) ? w.dogs.filter(x => x !== id) : [...w.dogs, id];
+    b.classList.toggle('on', w.dogs.includes(id));
+  });
+  $('walkAdd').onclick = () => {
+    const list = [...walksOf(S.days[S.date]), { slot:w.slot, min:w.min, dogs:dogList().map(d => d.id).filter(id => w.dogs.includes(id)) }];
+    saveDay(S.date, { walks:list });
+    if (navigator.vibrate) navigator.vibrate(15);
+    toast(`${WALK_SLOT[w.slot]}の散歩 ${w.min}分を記録しました`);
+  };
+  $('walkList').querySelectorAll('.linkbtn').forEach(b => {
+    let armed = false;
+    b.onclick = () => {
+      if (!armed) { armed = true; b.textContent = 'もう一度で取消'; setTimeout(() => { armed = false; b.textContent = '取り消す'; }, 2500); return; }
+      const list = walksOf(S.days[S.date]).filter((_, i) => i !== Number(b.dataset.i));
+      saveDay(S.date, { walks: list.length ? list : deleteField() });
+    };
+  });
+}
+
+function renderLog() { renderBody(); renderBp(); renderWalk(); renderAlcohol(); renderExercises(); }
 
 // ═══════════════════════════════════════════════
 //  ホーム
@@ -744,7 +931,7 @@ function bestStreak(test) {
   return best;
 }
 function rangeStats(from, to) {
-  let strengthDays=0, sets=0, sober=0, drink=0, bodyDays=0;
+  let strengthDays=0, sets=0, sober=0, drink=0, bodyDays=0, walks=0, walkMins=0;
   const rs = ridesOf(from, to), rides = rs.length, rideKm = rs.reduce((n, r) => n + r.distance, 0) / 1000;
   for (let d = from; d <= to; d = addDays(d,1)) {
     const x = S.days[d]; if (!x) continue;
@@ -753,8 +940,9 @@ function rangeStats(from, to) {
     if (x.alcohol === false) sober++;
     if (x.alcohol === true) drink++;
     if (x.weight != null) bodyDays++;
+    walks += walksOf(x).length; walkMins += walkMin(x);
   }
-  return { strengthDays, sets, sober, drink, bodyDays, rides, rideKm };
+  return { strengthDays, sets, sober, drink, bodyDays, rides, rideKm, walks, walkMins };
 }
 
 function renderHome() {
@@ -770,20 +958,26 @@ function renderHome() {
   }
   const alc = day.alcohol === false ? '<span style="color:var(--sober)">なし</span>' : day.alcohol === true ? '<span style="color:var(--drink)">あり</span>' : '<span style="color:var(--dim)">—</span>';
   const list = activeEx(), done = list.filter(ex => exDone(day, ex)).length;
+  const bpL = day.bp && (day.bp.pm ? ['夜', day.bp.pm] : day.bp.am ? ['朝', day.bp.am] : null);
+  const bpTile = bpL ? `<div class="v" style="font-size:24px">${bpL[1].sys}<small>/</small>${bpL[1].dia}</div><div class="sub">${bpL[0]}${day.bp.am && day.bp.pm ? '（朝 ' + day.bp.am.sys + '/' + day.bp.am.dia + '）' : ''}</div>` : '<div class="v"><span style="color:var(--dim)">—</span></div><div class="sub">未記録</div>';
   $('todayTiles').innerHTML = `
     <button class="t" data-go="log"><div class="k">体重</div><div class="v">${wHtml}</div><div class="sub">${wSub}</div></button>
     <button class="t" data-go="log"><div class="k">飲酒</div><div class="v" style="font-size:24px">${alc}</div><div class="sub">${day.alcohol==null?'未記録':''}</div></button>
-    <button class="t" data-go="log"><div class="k">筋トレ</div><div class="v" style="${done&&done===list.length?'color:var(--strength)':''}">${done}<small>/${list.length}</small></div><div class="sub">${setCount(day)} セット</div></button>`;
-  $('todayTiles').querySelectorAll('[data-go]').forEach(b => b.onclick = () => { S.date = t; go('log'); });
+    <button class="t" data-go="log"><div class="k">筋トレ</div><div class="v" style="${done&&done===list.length?'color:var(--strength)':''}">${done}<small>/${list.length}</small></div><div class="sub">${setCount(day)} セット</div></button>
+    <button class="t" data-go="log"><div class="k">血圧</div>${bpTile}</button>
+    <button class="t" data-go="log"><div class="k">散歩</div>${hasWalk(day) ? `<div class="v">${walkMin(day)}<small>分</small></div><div class="sub">${walksOf(day).length}回</div>` : '<div class="v"><span style="color:var(--dim)">—</span></div><div class="sub">未記録</div>'}</button>
+    <button class="t" data-go="ride"><div class="k">ライド</div>${hasRide(day) ? `<div class="v">${dayKm(day).toFixed(1)}<small>km</small></div><div class="sub">${day.rides.length}本</div>` : '<div class="v"><span style="color:var(--dim)">—</span></div><div class="sub">なし</div>'}</button>`;
+  $('todayTiles').querySelectorAll('[data-go]').forEach(b => b.onclick = () => { S.date = t; go(b.dataset.go); });
   $('todayTiles').querySelectorAll('.t').forEach(b => b.style.textAlign = 'left');
 
   // 連続
   const sober = x => x && x.alcohol === false;
   const str = x => hasStrength(x);
-  const rec = x => x && (x.weight != null || x.alcohol != null || hasStrength(x) || hasRide(x));
+  const rec = x => x && (x.weight != null || x.alcohol != null || hasStrength(x) || hasRide(x) || hasWalk(x) || !!x.bp);
   const items = [
     { k:'休肝日', c:'var(--sober)', n:streak(sober), b:bestStreak(sober) },
     { k:'筋トレ', c:'var(--strength)', n:streak(str), b:bestStreak(str) },
+    { k:'散歩', c:'var(--walk)', n:streak(hasWalk), b:bestStreak(hasWalk) },
     { k:'記録', c:'var(--accent-t)', n:streak(rec), b:bestStreak(rec) },
   ];
   $('streaks').innerHTML = items.map(i => `<div class="streak" style="--c:${i.c}"><div class="k">${i.k}</div><div class="v">${i.n}<small>日</small></div><div class="best num">最長 ${i.b}日</div></div>`).join('');
@@ -802,6 +996,8 @@ function renderHome() {
     ${row('飲酒', s=>s.drink, '日')}
     ${row('ライド', s=>s.rides, '回')}
     ${row('距離', s=>Math.round(s.rideKm), 'km')}
+    ${row('散歩', s=>s.walks, '回')}
+    ${row('散歩時間', s=>(s.walkMins/60).toFixed(1), 'h')}
   </tbody>`;
 
   renderHeat();
@@ -812,6 +1008,7 @@ const HEAT_MODES = [
   { id:'strength', label:'筋トレ', c:'var(--strength)', rgb:'255,138,76',  rgbL:'229,100,42' },
   { id:'sober',    label:'休肝日', c:'var(--sober)',    rgb:'61,220,151',  rgbL:'16,164,104' },
   { id:'ride',     label:'ライド', c:'var(--ride)',     rgb:'79,209,232',  rgbL:'14,159,187' },
+  { id:'walk',     label:'散歩',   c:'var(--walk)',     rgb:'255,194,75',  rgbL:'201,135,0' },
   { id:'body',     label:'体組成', c:'var(--body)',     rgb:'169,139,255', rgbL:'118,86,227' },
 ];
 function heatLevel(mode, x) {
@@ -821,7 +1018,8 @@ function heatLevel(mode, x) {
   if (mode === 'body') return x.weight != null ? 4 : 0;
   if (mode === 'ride') { const k = dayKm(x); return !hasRide(x) ? 0 : k < 20 ? 1 : k < 40 ? 2 : k < 60 ? 3 : 4; }
   // 総合：達成した項目の数
-  return (hasStrength(x)?1:0) + (x.alcohol===false?1:0) + (x.weight!=null?1:0) + (hasRide(x)?1:0);
+  if (mode === 'walk') { const m = walkMin(x); return !hasWalk(x) ? 0 : m < 20 ? 1 : m < 40 ? 2 : m < 60 ? 3 : 4; }
+  return Math.min(4, (hasStrength(x)?1:0) + (x.alcohol===false?1:0) + (x.weight!=null?1:0) + (hasRide(x)?1:0) + (hasWalk(x)?1:0));
 }
 function heatColor(mode, lv) {
   const m = HEAT_MODES.find(h => h.id === mode);
@@ -881,6 +1079,8 @@ function renderSettings() {
     queueSettingsSave(true);
   })));
   renderExSettings();
+  renderDogSettings();
+  renderBpRef();
   const pm = $('privMini');
   pm.querySelector('.v').textContent = (S.settings.privacyM ?? 500) + 'm';
   pm.querySelectorAll('button').forEach(b => { b.onpointerdown = null; });
@@ -896,7 +1096,7 @@ function renderSettings() {
 let setT;
 function queueSettingsSave(rerender) {
   clearTimeout(setT);
-  setT = setTimeout(() => { saveSettings({ maxHR:S.settings.maxHR, zones:S.settings.zones, exercises:S.settings.exercises, privacyM:S.settings.privacyM ?? 500 }); if (rerender) renderSettings(); }, 700);
+  setT = setTimeout(() => { saveSettings({ maxHR:S.settings.maxHR, zones:S.settings.zones, exercises:S.settings.exercises, privacyM:S.settings.privacyM ?? 500, dogs:S.settings.dogs, bpRef:S.settings.bpRef }); if (rerender) renderSettings(); }, 700);
 }
 
 function renderExSettings() {
@@ -952,6 +1152,33 @@ function renderExSettings() {
       exs.splice(i, 1); S.editEx = null; queueSettingsSave(); renderExSettings();
     };
   });
+}
+function renderDogSettings() {
+  const ds = S.settings.dogs = (S.settings.dogs || structuredClone(DEFAULT_DOGS));
+  $('dogSettings').innerHTML = ds.map((d, i) => `
+    <div class="srow" data-i="${i}"><input value="${esc(d.name)}" maxlength="12" style="flex:1" aria-label="犬の名前">
+      <button class="btn danger" style="width:84px;height:44px" data-a="del">削除</button></div>`).join('') || '<div class="label">犬が登録されていません</div>';
+  $('dogSettings').querySelectorAll('.srow').forEach(row => {
+    const i = Number(row.dataset.i);
+    row.querySelector('input').onchange = e => { const v = e.target.value.trim(); if (v) { ds[i].name = v; queueSettingsSave(); } };
+    let armed = false;
+    row.querySelector('[data-a=del]').onclick = e => {
+      if (!armed) { armed = true; e.target.textContent = '本当に'; setTimeout(() => { armed = false; e.target.textContent = '削除'; }, 2500); return; }
+      ds.splice(i, 1); queueSettingsSave(); renderDogSettings(); S.walkDate = null;
+    };
+  });
+}
+$('dogAdd').onclick = () => { (S.settings.dogs ||= structuredClone(DEFAULT_DOGS)).push({ id:'dog' + Date.now().toString(36), name:'新しい犬' }); queueSettingsSave(); renderDogSettings(); S.walkDate = null; };
+function renderBpRef() {
+  const ref = S.settings.bpRef ||= { high:[135,85], goal:[125,75] };
+  const rows = [['high',0,'高血圧の目安（最高）'],['high',1,'高血圧の目安（最低）'],['goal',0,'目標（最高）'],['goal',1,'目標（最低）']];
+  $('bpRefRows').innerHTML = rows.map(([k, j, nm]) => `<div class="srow"><div class="nm">${nm}</div><div class="mini" data-k="${k}" data-j="${j}"><button data-d="-1">−</button><div class="v">${ref[k][j]}</div><button data-d="1">＋</button></div></div>`).join('');
+  $('bpRefRows').querySelectorAll('.mini').forEach(m => m.querySelectorAll('button').forEach(b => holdRepeat(b, () => {
+    const k = m.dataset.k, j = Number(m.dataset.j);
+    ref[k][j] = Math.min(220, Math.max(40, ref[k][j] + Number(b.dataset.d)));
+    m.querySelector('.v').textContent = ref[k][j];
+    queueSettingsSave();
+  })));
 }
 $('exAdd').onclick = () => {
   const id = 'ex' + Date.now().toString(36);
@@ -1248,6 +1475,7 @@ function renderRides() {
   } else {
     html += `<div class="card placeholder"><div style="font-weight:700;color:var(--text)">まだライドがありません</div><div style="font-size:13px">上のボタンからFITファイルを取り込んでください</div></div>`;
   }
+  $('v-ride').classList.remove('detail');
   $('v-ride').innerHTML = html;
   $('fitInput').onchange = e => { importFiles([...e.target.files]); e.target.value = ''; };
   $('v-ride').querySelectorAll('.ride-row').forEach(b => b.onclick = () => { S.rideOpen = b.dataset.id; window.scrollTo(0, 0); renderRides(); });
@@ -1294,6 +1522,7 @@ async function renderRideDetail() {
   if (S._rideShown === r.id + document.documentElement.dataset.theme) return;   // 再描画でグラフを壊さない
   S._rideShown = r.id + document.documentElement.dataset.theme;
   disposeRideViz();
+  $('v-ride').classList.add('detail');
   const d = rideDateLabel(r), z = r.zones || S.settings.zones;
   const zsum = r.zoneSec.reduce((a, b) => a + b, 0) || 1;
   const bounds = [0, ...z];
@@ -1303,6 +1532,7 @@ async function renderRideDetail() {
   $('v-ride').innerHTML = `
     <button class="backbtn" id="rideBack"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>一覧</button>
     <div class="ride-title"><span class="num">${d.md}</span> (${d.wd}) <span class="num">${d.hm}</span>${r.indoor ? '<span class="tag">屋内</span>' : ''}</div>
+    <div class="ride-cols"><div class="col">
     <div class="card"><div class="today">
       ${t('距離', km1(r.distance), 'km')}${t('走行時間', fmtDur(r.moving), '', `経過 ${fmtDur(r.elapsed)}`)}${t('平均速度', r.avgSpeed, 'km/h', `最高 ${r.maxSpeed ?? '—'}`)}
       ${t('平均心拍', r.avgHr, 'bpm', `最大 ${r.maxHr ?? '—'}`)}${t('ケイデンス', r.avgCad, 'rpm')}${t('獲得標高', r.ascent, 'm')}
@@ -1320,8 +1550,10 @@ async function renderRideDetail() {
       <div style="display:flex;align-items:baseline;gap:10px"><span class="bigpct" style="color:${r.drift == null ? 'var(--dim)' : r.drift < 5 ? 'var(--sober)' : r.drift < 8 ? 'var(--strength)' : 'var(--drink)'};font-size:44px">${driftTxt}</span></div>
       <div class="label" style="margin-top:4px">${driftNote}（目安：5%未満なら良好）</div>
     </div>
+    </div><div class="col">
     ${r.hasRoute ? `<div class="card"><h2><span class="dot" style="background:var(--ride)"></span>ルート<span class="r">色は心拍ゾーン</span></h2><div id="rideMap"></div><div class="label" style="margin-top:6px">出発・到着地点の周囲は表示していません（プライバシーゾーン）。スマホでは地図をタップすると動かせます</div></div>` : ''}
     <div class="card"><h2>グラフ<span class="r" id="chartX"></span></h2><div id="rideCharts"><div class="label">読み込み中…</div></div></div>
+    </div></div>
     <button class="btn danger" id="rideDel" style="margin-bottom:12px">このライドを削除</button>`;
   $('rideBack').onclick = () => { S.rideOpen = null; disposeRideViz(); renderRides(); window.scrollTo(0, 0); };
   let armed = false;
@@ -1409,6 +1641,98 @@ async function drawRideMap(route, z) {
   if (mobile) rideMap.on('click', () => rideMap.dragging.enabled() ? rideMap.dragging.disable() : rideMap.dragging.enable());
 }
 window.addEventListener('resize', () => rideCharts.forEach(c => c.resize()));
+
+// ═══════════════════════════════════════════════
+//  推移（グラフ）
+// ═══════════════════════════════════════════════
+const TREND_P = { '1m':{ label:'1か月', days:30, bucket:'day' }, '3m':{ label:'3か月', days:91, bucket:'week' }, '1y':{ label:'1年', days:365, bucket:'month' } };
+S.trendP = '3m'; S.trendOpt = { fat:false, muscle:false };
+let trendCharts = [];
+const avg = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
+function renderTrend() {
+  const P = TREND_P[S.trendP], to = todayStr(), from = addDays(to, -(P.days - 1));
+  const daysIn = []; for (let d = from; d <= to; d = addDays(d, 1)) daysIn.push(d);
+  // 体重
+  const wPts = daysIn.filter(d => S.days[d]?.weight != null).map(d => [d, S.days[d].weight]);
+  const ma = wPts.map(([d]) => { const lo = addDays(d, -6); const v = wPts.filter(([x]) => x >= lo && x <= d).map(x => x[1]); return [d, r1(avg(v))]; });
+  const wFirst = wPts[0]?.[1], wLast = wPts[wPts.length-1]?.[1];
+  const wSum = wPts.length ? `${wLast.toFixed(1)}kg <span style="color:${wLast - wFirst > 0 ? 'var(--drink)' : 'var(--sober)'}">${wLast - wFirst > 0 ? '+' : ''}${(wLast - wFirst).toFixed(1)}</span>` : '';
+  // 血圧
+  const bpS = k => daysIn.filter(d => S.days[d]?.bp?.[k]).map(d => [d, S.days[d].bp[k]]);
+  const am = bpS('am'), pm = bpS('pm');
+  const bpAvg = a => a.length ? `${Math.round(avg(a.map(x => x[1].sys)))}/${Math.round(avg(a.map(x => x[1].dia)))}` : '—';
+  // ライド距離
+  const bkey = d => P.bucket === 'day' ? d : P.bucket === 'week' ? addDays(d, -((parseDs(d).getDay() + 6) % 7)) : d.slice(0, 7);
+  const buckets = [...new Set(daysIn.map(bkey))];
+  const rs = ridesOf(from, to);
+  const km = Object.fromEntries(buckets.map(b => [b, 0]));
+  rs.forEach(r => { const k = bkey(r.date); if (k in km) km[k] += r.distance / 1000; });
+  const bLabel = b => P.bucket === 'month' ? `${Number(b.slice(5))}月` : `${Number(b.slice(5, 7))}/${Number(b.slice(8))}`;
+  const ref = S.settings.bpRef || { high:[135,85], goal:[125,75] };
+
+  $('v-trend').innerHTML = `
+    <div class="card wide"><div class="chips" id="trendP" style="margin:0">${Object.entries(TREND_P).map(([k, v]) => `<button data-p="${k}" class="${S.trendP === k ? 'on' : ''}">${v.label}</button>`).join('')}</div></div>
+    <div class="card"><h2><span class="dot" style="background:var(--body)"></span>体重<span class="r tsum">${wSum}</span></h2>
+      <div class="chips small" id="bodyOpt"><button data-o="fat" style="--c:var(--strength)" class="${S.trendOpt.fat ? 'on' : ''}">体脂肪率</button><button data-o="muscle" style="--c:var(--ride)" class="${S.trendOpt.muscle ? 'on' : ''}">骨格筋率</button></div>
+      ${wPts.length ? '<div class="tchart" id="tc-w"></div>' : '<div class="empty">この期間の記録がありません</div>'}</div>
+    <div class="card"><h2><span class="dot" style="background:var(--bp)"></span>血圧<span class="r tsum">朝 ${bpAvg(am)} · 夜 ${bpAvg(pm)}</span></h2>
+      ${am.length || pm.length ? '<div class="tchart" id="tc-bp"></div>' : '<div class="empty">この期間の記録がありません</div>'}
+      <div class="label">平均値。点線：高血圧の目安 ${ref.high[0]}/${ref.high[1]}、細線：目標 ${ref.goal[0]}/${ref.goal[1]}（設定で変更可）</div></div>
+    <div class="card wide"><h2><span class="dot" style="background:var(--ride)"></span>ライド距離<span class="r tsum">${rs.length}回 · ${Math.round(rs.reduce((n, r) => n + r.distance, 0) / 1000)} km</span></h2>
+      <div class="tchart" id="tc-r"></div><div class="label">${P.bucket === 'day' ? '日ごと' : P.bucket === 'week' ? '週ごと（月曜始まり）' : '月ごと'}の合計</div></div>`;
+  $('trendP').querySelectorAll('button').forEach(b => b.onclick = () => { S.trendP = b.dataset.p; renderTrend(); });
+  $('bodyOpt').querySelectorAll('button').forEach(b => b.onclick = () => { S.trendOpt[b.dataset.o] = !S.trendOpt[b.dataset.o]; renderTrend(); });
+
+  loadScript(LIB.echarts).then(() => {
+    if (S.view !== 'trend') return;
+    trendCharts.forEach(c => c.dispose()); trendCharts = [];
+    const C = { line:cssVar('--line'), dim:cssVar('--dim'), text:cssVar('--text'), surface:cssVar('--surface') };
+    const base = () => ({
+      animation:false, grid:{ left:40, right:40, top:24, bottom:28 },
+      tooltip:{ trigger:'axis', confine:true, backgroundColor:C.surface, borderColor:C.line, textStyle:{ color:C.text, fontSize:12 } },
+      legend:{ top:0, left:'center', textStyle:{ color:C.dim, fontSize:11 }, itemWidth:14, itemHeight:8 },
+    });
+    const timeX = { type:'time', min:from, max:to, axisLabel:{ color:C.dim, fontSize:10, hideOverlap:true, formatter:'{M}/{d}' }, axisLine:{ lineStyle:{ color:C.line } }, splitLine:{ show:false } };
+    const valY = extra => ({ type:'value', scale:true, splitNumber:4, axisLabel:{ color:C.dim, fontSize:10 }, splitLine:{ lineStyle:{ color:C.line, opacity:.6 } }, ...extra });
+    if ($('tc-w')) {
+      const ch = echarts.init($('tc-w')); trendCharts.push(ch);
+      const series = [
+        { name:'体重', type:'line', data:wPts, symbolSize:4, lineStyle:{ width:1, opacity:.5 }, itemStyle:{ color:cssVar('--body') } },
+        { name:'7日平均', type:'line', data:ma, showSymbol:false, smooth:true, lineStyle:{ width:3 }, itemStyle:{ color:cssVar('--body') } },
+      ];
+      const yAxis = [valY({ name:'kg', nameTextStyle:{ color:C.dim, fontSize:10 } })];
+      if (S.trendOpt.fat || S.trendOpt.muscle) {
+        yAxis.push(valY({ name:'%', position:'right', nameTextStyle:{ color:C.dim, fontSize:10 }, splitLine:{ show:false } }));
+        if (S.trendOpt.fat) series.push({ name:'体脂肪率', type:'line', yAxisIndex:1, data:daysIn.filter(d => S.days[d]?.fat != null).map(d => [d, S.days[d].fat]), symbolSize:3, lineStyle:{ width:1.5 }, itemStyle:{ color:cssVar('--strength') } });
+        if (S.trendOpt.muscle) series.push({ name:'骨格筋率', type:'line', yAxisIndex:1, data:daysIn.filter(d => S.days[d]?.muscle != null).map(d => [d, S.days[d].muscle]), symbolSize:3, lineStyle:{ width:1.5 }, itemStyle:{ color:cssVar('--ride') } });
+      }
+      ch.setOption({ ...base(), xAxis:timeX, yAxis, series });
+    }
+    if ($('tc-bp')) {
+      const ch = echarts.init($('tc-bp')); trendCharts.push(ch);
+      const c = cssVar('--bp'), c2 = cssVar('--ride');
+      const ml = { silent:true, symbol:'none', label:{ show:false }, data:[
+        { yAxis:ref.high[0], lineStyle:{ color:cssVar('--drink'), type:'dashed', width:1 } }, { yAxis:ref.high[1], lineStyle:{ color:cssVar('--drink'), type:'dashed', width:1 } },
+        { yAxis:ref.goal[0], lineStyle:{ color:cssVar('--sober'), type:'solid', width:1, opacity:.7 } }, { yAxis:ref.goal[1], lineStyle:{ color:cssVar('--sober'), type:'solid', width:1, opacity:.7 } } ] };
+      ch.setOption({ ...base(), xAxis:timeX, yAxis:valY({ name:'mmHg', nameTextStyle:{ color:C.dim, fontSize:10 } }),
+        series:[
+          { name:'朝 最高', type:'line', data:am.map(([d, v]) => [d, v.sys]), symbolSize:4, itemStyle:{ color:c }, markLine:ml },
+          { name:'朝 最低', type:'line', data:am.map(([d, v]) => [d, v.dia]), symbolSize:4, itemStyle:{ color:c }, lineStyle:{ opacity:.6 } },
+          { name:'夜 最高', type:'line', data:pm.map(([d, v]) => [d, v.sys]), symbolSize:4, symbol:'rect', itemStyle:{ color:c2 }, lineStyle:{ type:'dashed' } },
+          { name:'夜 最低', type:'line', data:pm.map(([d, v]) => [d, v.dia]), symbolSize:4, symbol:'rect', itemStyle:{ color:c2 }, lineStyle:{ type:'dashed', opacity:.6 } },
+        ] });
+    }
+    {
+      const ch = echarts.init($('tc-r')); trendCharts.push(ch);
+      ch.setOption({ ...base(), legend:{ show:false },
+        tooltip:{ ...base().tooltip, formatter: p => `${p[0].name}${P.bucket === 'week' ? '〜' : ''}<br><b>${p[0].value}</b> km` },
+        xAxis:{ type:'category', data:buckets.map(bLabel), axisLabel:{ color:C.dim, fontSize:10, hideOverlap:true }, axisLine:{ lineStyle:{ color:C.line } }, axisTick:{ show:false } },
+        yAxis:valY({ scale:false, name:'km', nameTextStyle:{ color:C.dim, fontSize:10 } }),
+        series:[{ type:'bar', data:buckets.map(b => Math.round(km[b] * 10) / 10), itemStyle:{ color:cssVar('--ride'), borderRadius:[4, 4, 0, 0] }, barMaxWidth:28 }] });
+    }
+  }).catch(e => { console.error(e); toast('グラフを表示できませんでした'); });
+}
+window.addEventListener('resize', () => trendCharts.forEach(c => c.resize()));
 
 // ═══════════════════════════════════════════════
 //  表示テーマ（端末ごとに保存）
