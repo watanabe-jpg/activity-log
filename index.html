@@ -591,7 +591,7 @@ import {
   writeBatch, arrayUnion, arrayRemove,
 } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
 
-const VERSION = 'v1.4.1';
+const VERSION = 'v1.4.2';
 
 // localhost で ?emu を付けて開くとFirebaseエミュレータに接続（開発用）
 const USE_EMU = ['localhost','127.0.0.1'].includes(location.hostname) && new URLSearchParams(location.search).has('emu');
@@ -1196,22 +1196,34 @@ function getModels() {
       import(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-app-check.js`),
       import(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-ai.js`),
     ]);
-    ac.initializeAppCheck(fbApp, { provider:new ac.ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY), isTokenAutoRefreshEnabled:true });
+    const appCheck = ac.initializeAppCheck(fbApp, { provider:new ac.ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY), isTokenAutoRefreshEnabled:true });
     const inst = ai.getAI(fbApp, { backend:new ai.GoogleAIBackend() });
     const responseSchema = mealSchema(ai.Schema);
-    return AI_MODELS.map(model => ai.getGenerativeModel(inst, { model, systemInstruction:AI_SYS, generationConfig:{ responseMimeType:'application/json', responseSchema } }));
+    const models = AI_MODELS.map(model => ({ name:model, m:ai.getGenerativeModel(inst, { model, systemInstruction:AI_SYS, generationConfig:{ responseMimeType:'application/json', responseSchema } }) }));
+    return { models, checkToken:() => ac.getToken(appCheck) };
   })().catch(e => { aiP = null; throw e; });
 }
-// 60秒で打ち切る（reCAPTCHAが読み込めない環境などで待ち続けないように）
+// 90秒で打ち切る（reCAPTCHAが読み込めない環境などで待ち続けないように）。どの段階で止まったかを track に残す
+const AI_LIMIT = 90000;
 function aiEstimate(args) {
-  return Promise.race([aiEstimateRaw(args), new Promise((_, ng) => setTimeout(() => ng(new Error('AI_TIMEOUT')), 60000))]);
+  const track = { phase:'準備', t0:Date.now(), ac:'' };
+  const tag = e => { try { e.track = track; } catch (_) {} return e; };
+  return Promise.race([
+    aiEstimateRaw(args, track).catch(e => { throw tag(e); }),
+    new Promise((_, ng) => setTimeout(() => ng(tag(new Error('AI_TIMEOUT'))), AI_LIMIT)),
+  ]);
 }
-async function aiEstimateRaw({ image, text }) {
+async function aiEstimateRaw({ image, text }, track = {}) {
   if (USE_EMU) return mockAI(text);
-  const models = await getModels();
+  track.phase = 'AIの読み込み';
+  const { models, checkToken } = await getModels();
+  track.phase = 'App Check確認';
+  try { const r = await checkToken(); track.ac = r?.error ? 'NG(' + (r.error.code || r.error.message || '') + ')' : 'OK'; }
+  catch (e) { track.ac = 'NG(' + (e.code || e.message || '') + ')'; }
   const parts = image ? [{ inlineData:{ mimeType:'image/jpeg', data:image } }, '写真に写っている飲食物を推定してください。'] : [`次の飲食物を推定してください：${text}`];
   let last;
-  for (const m of models) {
+  for (const { name, m } of models) {
+    track.phase = 'AI判定（' + name + '）';
     try { const r = await m.generateContent(parts); return parseAI(r.response.text()); }
     catch (e) {
       last = e; console.error(e);
@@ -1246,7 +1258,7 @@ function parseAI(txt) {
 function aiErrMsg(e) {
   const st = e?.customErrorData?.status, code = String(e?.code || ''), m = String(e?.message || '');
   if (m === 'AI_NOT_READY') return 'AIの初期設定がまだです（README「AI（食事の写真判定）の初期設定」）';
-  if (m === 'AI_TIMEOUT') return 'AIの応答がありませんでした（60秒）。通信状態や、広告ブロック等の設定を確認してください';
+  if (m === 'AI_TIMEOUT') return `AIの応答がありませんでした（${AI_LIMIT / 1000}秒）。通信状態や、広告ブロック等の設定を確認してください`;
   if (m === 'AI_PARSE') return 'AIの返答を読み取れませんでした。もう一度試してください';
   if (st === 429) return 'AIの無料枠の上限に達しました。時間をおいて試すか、手入力してください';
   if (code.includes('api-not-enabled')) return 'AI Logic が有効になっていません（Firebaseコンソールで設定）';
@@ -1259,7 +1271,8 @@ function aiErrDetail(e) {
   const st = e?.customErrorData?.status, code = String(e?.code || '');
   const srv = e?.customErrorData?.errorDetails?.[0]?.reason || '';
   const m = String(e?.message || '').replace(/^.*?\] ?/, '').slice(0, 240);
-  return [st, code, srv, m].filter(Boolean).join(' / ');
+  const t = e?.track ? `段階:${e.track.phase} / AppCheck:${e.track.ac || '未確認'} / ${Math.round((Date.now() - e.track.t0) / 1000)}秒` : '';
+  return [st, code, srv, m, t].filter(Boolean).join(' / ');
 }
 // 開発用（?emu）：AIの代わりに固定の結果を返す
 function mockAI(text) {
