@@ -36,11 +36,11 @@ GitHub Pages ＋ Firebase（Auth / Firestore、Sparkプラン＝無料）で動�
 食事タブの写真判定は Firebase AI Logic（Gemini Developer API の無料枠）を使います。Sparkプラン（無料）のまま使えます。
 
 1. reCAPTCHA のキーを作る：https://www.google.com/recaptcha/admin/create
-   - 種類：「スコアベース（v3）」
-   - ドメイン：`watanabe-jpg.github.io`
-   - 作成後に表示される「サイトキー」と「シークレットキー」を控える
-2. Firebaseコンソール → セキュリティ（Security）→ App Check → アプリ → ウェブアプリ →「reCAPTCHA」
-   - 1のシークレットキーを貼り付けて保存
+   - 種類：「スコアベース（v3）」、ドメイン：`watanabe-jpg.github.io`、プロジェクト：actlog（個人のGoogleアカウントで作成）
+   - 表示された「サイトキー」を控える
+2. Firebaseコンソール → App Check → アプリ → actlog-web →「Fraud Defense（旧称 reCAPTCHA Enterprise）」
+   - 1のサイトキーを貼り付けて保存（旧方式の「reCAPTCHA」は非推奨のため使わない）
+   - 「API」タブの Cloud Firestore・Authentication は「適用」しない（通常の記録の読み書きが拒否されるため）
 3. Firebaseコンソール → AIサービス（AI Services）→ AI Logic →「始める（Get started）」
    - Gemini API プロバイダは「Gemini Developer API」を選ぶ（請求先アカウントの登録は不要）
 4. index.html 上部の `RECAPTCHA_SITE_KEY` に1のサイトキーを貼り付けて push
