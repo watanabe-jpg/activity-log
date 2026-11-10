@@ -591,7 +591,7 @@ import {
   writeBatch, arrayUnion, arrayRemove,
 } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
 
-const VERSION = 'v1.4.0';
+const VERSION = 'v1.4.1';
 
 // localhost で ?emu を付けて開くとFirebaseエミュレータに接続（開発用）
 const USE_EMU = ['localhost','127.0.0.1'].includes(location.hostname) && new URLSearchParams(location.search).has('emu');
@@ -1202,7 +1202,11 @@ function getModels() {
     return AI_MODELS.map(model => ai.getGenerativeModel(inst, { model, systemInstruction:AI_SYS, generationConfig:{ responseMimeType:'application/json', responseSchema } }));
   })().catch(e => { aiP = null; throw e; });
 }
-async function aiEstimate({ image, text }) {
+// 60秒で打ち切る（reCAPTCHAが読み込めない環境などで待ち続けないように）
+function aiEstimate(args) {
+  return Promise.race([aiEstimateRaw(args), new Promise((_, ng) => setTimeout(() => ng(new Error('AI_TIMEOUT')), 60000))]);
+}
+async function aiEstimateRaw({ image, text }) {
   if (USE_EMU) return mockAI(text);
   const models = await getModels();
   const parts = image ? [{ inlineData:{ mimeType:'image/jpeg', data:image } }, '写真に写っている飲食物を推定してください。'] : [`次の飲食物を推定してください：${text}`];
@@ -1242,12 +1246,20 @@ function parseAI(txt) {
 function aiErrMsg(e) {
   const st = e?.customErrorData?.status, code = String(e?.code || ''), m = String(e?.message || '');
   if (m === 'AI_NOT_READY') return 'AIの初期設定がまだです（README「AI（食事の写真判定）の初期設定」）';
+  if (m === 'AI_TIMEOUT') return 'AIの応答がありませんでした（60秒）。通信状態や、広告ブロック等の設定を確認してください';
   if (m === 'AI_PARSE') return 'AIの返答を読み取れませんでした。もう一度試してください';
   if (st === 429) return 'AIの無料枠の上限に達しました。時間をおいて試すか、手入力してください';
   if (code.includes('api-not-enabled')) return 'AI Logic が有効になっていません（Firebaseコンソールで設定）';
   if (st === 401 || st === 403 || /app.?check/i.test(m)) return 'AIの利用確認（App Check）に失敗しました。設定を確認してください';
-  if (!navigator.onLine || code.includes('fetch-error')) return '通信できませんでした。電波の良い場所でもう一度試してください';
-  return `AIで判定できませんでした（${st || code || m.slice(0, 60)}）`;
+  if (!navigator.onLine || (code.includes('fetch-error') && !st)) return '通信できませんでした。電波の良い場所でもう一度試してください';
+  return 'AIで判定できませんでした';
+}
+// 原因調査用の詳細（HTTPステータス・エラーコード・サーバーのメッセージ）
+function aiErrDetail(e) {
+  const st = e?.customErrorData?.status, code = String(e?.code || '');
+  const srv = e?.customErrorData?.errorDetails?.[0]?.reason || '';
+  const m = String(e?.message || '').replace(/^.*?\] ?/, '').slice(0, 240);
+  return [st, code, srv, m].filter(Boolean).join(' / ');
 }
 // 開発用（?emu）：AIの代わりに固定の結果を返す
 function mockAI(text) {
@@ -1333,15 +1345,15 @@ async function onPhoto(file) {
   runAI(sh);
 }
 async function runAI(sh) {
-  sh.status = 'loading'; sh.err = ''; renderSheet();
+  sh.status = 'loading'; sh.err = ''; sh.errDetail = ''; renderSheet();
   try {
-    const r = await aiEstimate({ image:sh.img });
+    const r = await aiEstimate({ image:sh.ai });
     if (S.sheet !== sh) return;
     sh.items = r.items; sh.note = r.note; sh.status = 'edit';
     if (!r.items.length) sh.err = '飲食物が見つかりませんでした。下の入力欄から追加できます';
   } catch (e) {
     if (S.sheet !== sh) return;
-    sh.status = 'error'; sh.err = aiErrMsg(e);
+    sh.status = 'error'; sh.err = aiErrMsg(e); sh.errDetail = aiErrDetail(e);
   }
   renderSheet();
 }
@@ -1393,8 +1405,8 @@ function renderSheet() {
   if (sh.status === 'loading') {
     h += `<div class="spin"></div><div class="sh-msg">AIが判定中…（数秒〜十数秒）</div>`;
   } else if (sh.status === 'error') {
-    h += `<div class="sh-err">${esc(sh.err)}</div>
-      <div class="cap2">${sh.img ? '<button class="btn primary" id="shRetry">もう一度判定</button>' : ''}<button class="btn ghost" id="shManual">入力して記録</button></div>`;
+    h += `<div class="sh-err">${esc(sh.err)}${sh.errDetail ? `<div style="font-weight:500;font-size:11px;margin-top:6px;word-break:break-all;opacity:.85">詳細：${esc(sh.errDetail)}</div>` : ''}</div>
+      <div class="cap2">${sh.ai ? '<button class="btn primary" id="shRetry">もう一度判定</button>' : ''}<button class="btn ghost" id="shManual">入力して記録</button></div>`;
   } else {
     h += `<div class="sub label" style="margin:14px 2px 6px;font-weight:700">時間帯</div>
       <div class="seg" id="shSlot">${Object.entries(MEAL_SLOT).map(([k, v]) => `<button data-s="${k}" class="${sh.slot === k ? 'on' : ''}">${v}</button>`).join('')}</div>`;
