@@ -577,7 +577,9 @@ const firebaseConfig = {
 // 食事の写真判定（AI）用：App Check（Fraud Defense＝旧 reCAPTCHA Enterprise）のサイトキー（README「AI（食事の写真判定）の初期設定」参照）
 const RECAPTCHA_SITE_KEY = '6LfxLhkuAAAAAAWvPrbhBHJfomBXfDHbG_Sph9Nj';
 // 使うAIモデル（左から順に試す。無料枠の上限などで失敗したら次のモデル）
-const AI_MODELS = ['gemini-3.8-flash', 'gemini-3.5-flash-lite'];
+// 2026/11/10時点：gemini-3.8-flash は無料枠で応答しない（503）ため 3.6-flash を優先
+const AI_MODELS = ['gemini-3.6-flash', 'gemini-3.5-flash-lite'];
+const AI_MODEL_LIMIT = 40000;   // 1モデルあたりの待ち時間。超えたら次のモデルへ
 const FB_VER = '12.19.0';
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
@@ -591,7 +593,7 @@ import {
   writeBatch, arrayUnion, arrayRemove,
 } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
 
-const VERSION = 'v1.4.2';
+const VERSION = 'v1.4.3';
 
 // localhost で ?emu を付けて開くとFirebaseエミュレータに接続（開発用）
 const USE_EMU = ['localhost','127.0.0.1'].includes(location.hostname) && new URLSearchParams(location.search).has('emu');
@@ -1224,11 +1226,17 @@ async function aiEstimateRaw({ image, text }, track = {}) {
   let last;
   for (const { name, m } of models) {
     track.phase = 'AI判定（' + name + '）';
-    try { const r = await m.generateContent(parts); return parseAI(r.response.text()); }
+    try {
+      const r = await Promise.race([
+        m.generateContent(parts),
+        new Promise((_, ng) => setTimeout(() => ng(new Error('MODEL_TIMEOUT')), AI_MODEL_LIMIT)),
+      ]);
+      return parseAI(r.response.text());
+    }
     catch (e) {
-      last = e; console.error(e);
+      last = e; console.error(name, e);
       const st = e?.customErrorData?.status;
-      if (!(st === 429 || st === 404 || st === 500 || st === 503)) break;   // 上限・モデル終了・混雑のときだけ次のモデルへ
+      if (!(e?.message === 'MODEL_TIMEOUT' || st === 429 || st === 404 || st === 500 || st === 503)) break;   // 上限・モデル終了・混雑・無応答のときだけ次のモデルへ
     }
   }
   throw last;
@@ -1259,6 +1267,7 @@ function aiErrMsg(e) {
   const st = e?.customErrorData?.status, code = String(e?.code || ''), m = String(e?.message || '');
   if (m === 'AI_NOT_READY') return 'AIの初期設定がまだです（README「AI（食事の写真判定）の初期設定」）';
   if (m === 'AI_TIMEOUT') return `AIの応答がありませんでした（${AI_LIMIT / 1000}秒）。通信状態や、広告ブロック等の設定を確認してください`;
+  if (m === 'MODEL_TIMEOUT') return `AIの応答がありませんでした（各モデル${AI_MODEL_LIMIT / 1000}秒）。時間をおいて試してください`;
   if (m === 'AI_PARSE') return 'AIの返答を読み取れませんでした。もう一度試してください';
   if (st === 429) return 'AIの無料枠の上限に達しました。時間をおいて試すか、手入力してください';
   if (code.includes('api-not-enabled')) return 'AI Logic が有効になっていません（Firebaseコンソールで設定）';
