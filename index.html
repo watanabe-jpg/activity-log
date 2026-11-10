@@ -29,7 +29,7 @@
   --text:#e9eef3; --muted:#8a96a3; --dim:#5a6570;
   --accent:#c8f560; --accent-ink:#141a05;
   --ride:#4fd1e8; --strength:#ff8a4c; --sober:#3ddc97; --drink:#ff5d6c; --body:#a98bff;
-  --walk:#ffc24b; --bp:#ff6f9c;
+  --walk:#ffc24b; --bp:#ff6f9c; --meal:#6ea8ff; --meal-ink:#06142b;
   --heat0:#1a1f25; --accent-t:#c8f560; --navbg:rgba(11,13,16,.92); --shadow:none;
   --r:16px;
   --num:'Barlow Condensed', -apple-system, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
@@ -41,7 +41,7 @@
   --text:#151a20; --muted:#5b6672; --dim:#8b96a1;
   --accent:#c8f560; --accent-ink:#141a05; --accent-t:#5a8500;
   --ride:#0e9fbb; --strength:#e5642a; --sober:#10a468; --drink:#e2374a; --body:#7656e3;
-  --walk:#c98700; --bp:#d23c70;
+  --walk:#c98700; --bp:#d23c70; --meal:#2f6fe0; --meal-ink:#ffffff;
   --heat0:#e7ebef; --navbg:rgba(255,255,255,.92); --shadow:0 1px 3px rgba(20,26,32,.06);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -68,7 +68,7 @@ header.top{display:flex;align-items:center;justify-content:space-between;height:
 .iconbtn svg{width:20px;height:20px}
 nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--navbg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   border-top:1px solid var(--line);padding-bottom:var(--safe-b);z-index:20}
-nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+nav.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-auto-flow:column;grid-auto-columns:1fr}
 nav.tabs button{height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--dim);font-size:11px;font-weight:600}
 nav.tabs button svg{width:24px;height:24px}
 nav.tabs button.on{color:var(--accent-t)}
@@ -259,6 +259,82 @@ section.view.on{display:block}
 .toggle.on{background:var(--accent)}
 .toggle.on::after{left:23px;background:var(--accent-ink)}
 
+/* ── meal ── */
+.kbig{display:flex;align-items:baseline;gap:6px}
+.kbig .v{font-family:var(--num);font-size:56px;font-weight:700;line-height:1;color:var(--meal)}
+.kbig .u{font-size:16px;color:var(--muted);font-weight:700}
+.pfc{display:grid;gap:9px;margin-top:14px}
+.pfc .row{display:grid;grid-template-columns:88px 1fr 92px;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+.pfc .bar{height:8px;border-radius:4px;background:var(--surface2);overflow:hidden}
+.pfc .bar i{display:block;height:100%;border-radius:4px}
+.pfc .num{text-align:right;font-size:17px;font-weight:600;color:var(--text)}
+.pfc .num small{font-size:11px;color:var(--muted);margin-left:2px}
+.groups{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.groups span{font-size:12px;font-weight:700;border-radius:20px;padding:4px 10px;background:var(--surface2);color:var(--dim)}
+.groups span.on{color:var(--text)}
+.groups span b{font-family:var(--num);font-size:14px;margin-left:4px;color:var(--meal)}
+.groups span.veg{background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:600}
+.cap2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cap2 .btn{cursor:pointer}
+.btn.mealbtn{background:var(--meal);color:var(--meal-ink)}
+.meal-row{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.slot-h + .meal-row{border-top:0}
+.meal-row .ph{width:56px;height:56px;border-radius:10px;background:var(--surface2) center/cover no-repeat;display:grid;place-items:center;color:var(--dim)}
+.meal-row .ph svg{width:24px;height:24px}
+.meal-row .body{text-align:left;min-width:0}
+.meal-row .nm{font-size:14px;font-weight:700;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.meal-row .meta{font-size:12px;color:var(--muted);font-family:var(--num)}
+.meal-row .rt{text-align:right}
+.meal-row .kc{font-family:var(--num);font-size:22px;font-weight:600;line-height:1}
+.meal-row .kc small{font-size:12px;color:var(--muted);margin-left:1px}
+.again{font-size:12px;font-weight:700;color:var(--meal);background:var(--surface2);border-radius:8px;padding:6px 10px;margin-top:6px}
+.slot-h{font-size:12px;color:var(--muted);font-weight:700;padding:12px 0 2px;display:flex;justify-content:space-between}
+.slot-h:first-child{padding-top:0}
+
+/* 記録・編集シート */
+#sheet{position:fixed;inset:0;background:var(--bg);z-index:55;display:flex;flex-direction:column}
+#sheet .sh-head{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;padding:calc(var(--safe-t) + 8px) 12px 8px;border-bottom:1px solid var(--line);max-width:560px;width:100%;margin:0 auto}
+#sheet .sh-head .t{text-align:center;font-weight:800;font-size:15px}
+#sheet .sh-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+#sheet .sh-in{max-width:560px;margin:0 auto;padding:12px 16px calc(32px + var(--safe-b))}
+.sh-btn{height:40px;padding:0 14px;border-radius:12px;font-weight:700;background:var(--surface);box-shadow:var(--shadow)}
+.sh-btn.primary{background:var(--meal);color:var(--meal-ink)}
+.sh-btn:disabled{opacity:.35}
+.sh-photo{width:100%;max-height:240px;object-fit:cover;border-radius:14px;display:block;background:var(--surface2)}
+.spin{width:36px;height:36px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--meal);animation:spin 1s linear infinite;margin:28px auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sh-msg{text-align:center;color:var(--muted);font-size:13px;margin:8px 0 16px}
+.sh-err{background:rgba(255,93,108,.1);color:var(--drink);border-radius:12px;padding:12px;font-size:13px;font-weight:700;margin:12px 0}
+.item{background:var(--surface);border-radius:14px;padding:12px;margin-top:10px;box-shadow:var(--shadow)}
+.item .ih{display:grid;grid-template-columns:1fr auto 34px;gap:8px;align-items:center}
+.item .ih input{padding:8px 10px;font-weight:700}
+.item .ik{font-family:var(--num);font-size:24px;font-weight:600;text-align:right;white-space:nowrap;line-height:1}
+.item .ik small{font-size:12px;color:var(--muted);margin-left:1px}
+.item .x{width:34px;height:34px;border-radius:10px;background:var(--surface2);color:var(--muted);font-size:18px;line-height:1}
+.item .amt{font-size:12px;color:var(--muted);margin:6px 2px 8px}
+.item .sub{font-size:12px;color:var(--muted);font-weight:700;margin:12px 2px 6px;display:flex;align-items:center}
+.item .sub .r{margin-left:auto;font-family:var(--num);font-size:14px;color:var(--text)}
+.item select{padding:8px 10px}
+.pchips{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.schips{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.pchips button,.schips button{min-height:42px;border-radius:10px;background:var(--surface2);font-size:12px;font-weight:700;color:var(--muted);line-height:1.15;padding:4px 2px}
+.pchips button small,.schips button small{display:block;font-family:var(--num);font-size:12px;font-weight:600;opacity:.85}
+.pchips button.on,.schips button.on{background:var(--meal);color:var(--meal-ink)}
+.astep{display:grid;grid-template-columns:52px 1fr 52px;gap:6px;align-items:center;margin-top:6px}
+.astep.w5{grid-template-columns:48px 48px 1fr 48px 48px}
+.astep button{height:40px;border-radius:10px;background:var(--surface2);font-family:var(--num);font-size:16px;font-weight:600}
+.astep .v{text-align:center;font-family:var(--num);font-size:24px;font-weight:600}
+.astep .v small{font-size:12px;color:var(--muted);margin-left:1px}
+.tagai{font-size:10px;font-weight:800;color:var(--meal);border:1px solid var(--meal);border-radius:6px;padding:0 5px;margin-left:6px;letter-spacing:.02em}
+.addrow{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:16px}
+.addrow .btn{width:auto;height:46px;padding:0 14px;font-size:14px}
+.sh-sum{background:var(--surface);border-radius:14px;padding:12px 14px;margin-top:16px;box-shadow:var(--shadow)}
+.sh-sum .k{font-family:var(--num);font-size:30px;font-weight:700;color:var(--meal);line-height:1.1}
+.sh-sum .k small{font-size:13px;color:var(--muted);margin-left:2px}
+.sh-sum .d{font-size:12px;color:var(--muted);font-family:var(--num);margin-top:2px}
+#saltSeg button{height:auto;min-height:44px;padding:5px 2px;line-height:1.25}
+#saltSeg button small{font-size:10px;font-weight:600}
+
 /* ── PC・タブレット横（900px以上） ── */
 @media (min-width:900px){
   #app{max-width:1160px;padding:76px 24px 48px}
@@ -358,36 +434,39 @@ section.view.on{display:block}
 
   <!-- 記録 -->
   <section class="view cols" id="v-log">
-    <div class="card">
+    <div class="card" id="card-body">
       <h2><span class="dot" style="background:var(--body)"></span>体組成</h2>
       <div id="bodyRows"></div>
       <button class="btn primary" id="bodySave" style="margin-top:10px">この値で記録</button>
       <div class="saved-note" id="bodyNote"></div>
     </div>
-    <div class="card">
+    <div class="card" id="card-bp">
       <h2><span class="dot" style="background:var(--bp)"></span>血圧<span class="r">mmHg</span></h2>
       <div class="seg slot" id="bpSlot"><button data-s="am">朝</button><button data-s="pm">夜</button></div>
       <div id="bpRows"></div>
       <button class="btn primary" id="bpSave" style="margin-top:10px">この値で記録</button>
       <div class="saved-note" id="bpNote"></div>
     </div>
-    <div class="card">
+    <div class="card" id="card-walk">
       <h2><span class="dot" style="background:var(--walk)"></span>散歩<span class="r num" id="walkSum"></span></h2>
       <div id="walkForm"></div>
       <div id="walkList"></div>
     </div>
-    <div class="card">
-      <h2><span class="dot" style="background:var(--sober)"></span>飲酒</h2>
+    <div class="card" id="card-alcohol">
+      <h2><span class="dot" style="background:var(--sober)"></span>飲酒<span class="r" id="alcNote"></span></h2>
       <div class="seg2">
         <button class="no" id="alcNo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>飲まない</button>
         <button class="yes" id="alcYes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l-1 8a4 4 0 0 1-8 0L7 3zM12 15v6M8 21h8"/></svg>飲んだ</button>
       </div>
     </div>
-    <div class="card">
+    <div class="card" id="card-strength">
       <h2><span class="dot" style="background:var(--strength)"></span>筋トレ<span class="r" id="exSummary"></span></h2>
       <div id="exList"></div>
     </div>
   </section>
+
+  <!-- 食事 -->
+  <section class="view cols" id="v-meal"></section>
 
   <!-- ライド -->
   <section class="view" id="v-ride"></section>
@@ -398,26 +477,42 @@ section.view.on{display:block}
   <!-- 設定 -->
   <section class="view cols" id="v-set">
     <div class="card">
+      <h2>表示する項目</h2>
+      <div id="secRows"></div>
+      <div class="label" style="margin-top:6px">オフにしても記録済みのデータは消えません。設定はアカウントごとに保存されます。</div>
+    </div>
+    <div class="card" id="set-meal">
+      <h2><span class="dot" style="background:var(--meal)"></span>食事</h2>
+      <div class="label" style="margin-bottom:6px">塩分の目標量（1日あたり）</div>
+      <div class="seg" id="saltSeg">
+        <button data-v="7.5">7.5g未満<br><small>成人男性</small></button>
+        <button data-v="6.5">6.5g未満<br><small>成人女性</small></button>
+        <button data-v="6">6g未満<br><small>高血圧の治療中</small></button>
+      </div>
+      <div class="label" style="margin-top:6px">厚生労働省「日本人の食事摂取基準（2025年版）」の目標量です。</div>
+      <div class="label" style="margin-top:10px">写真はAI（Gemini）に送って判定し、保存するのは小さいサムネイルだけです。無料枠では送った内容がGoogleの製品改善に使われるため、人の顔や書類が写り込まないようにしてください。</div>
+    </div>
+    <div class="card" id="set-zone">
       <h2><span class="dot" style="background:var(--drink)"></span>心拍ゾーン</h2>
       <div class="zonebar" id="zoneBar"></div>
       <div id="zoneRows"></div>
     </div>
-    <div class="card">
+    <div class="card" id="set-ex">
       <h2><span class="dot" style="background:var(--strength)"></span>筋トレメニュー</h2>
       <div id="exSettings"></div>
       <button class="btn ghost" id="exAdd" style="margin-top:8px">＋ 種目を追加</button>
     </div>
-    <div class="card">
+    <div class="card" id="set-dog">
       <h2><span class="dot" style="background:var(--walk)"></span>犬</h2>
       <div id="dogSettings"></div>
       <button class="btn ghost" id="dogAdd" style="margin-top:8px">＋ 犬を追加</button>
     </div>
-    <div class="card">
+    <div class="card" id="set-bpref">
       <h2><span class="dot" style="background:var(--bp)"></span>血圧の参考線</h2>
       <div id="bpRefRows"></div>
       <div class="label" style="margin-top:6px">推移グラフに表示する線です。かかりつけ医の指示があればそれに合わせてください。</div>
     </div>
-    <div class="card">
+    <div class="card" id="set-ride">
       <h2><span class="dot" style="background:var(--ride)"></span>ライド</h2>
       <div class="srow"><div class="nm">プライバシーゾーン<small>出発・到着地点の周囲を地図に表示・保存しない（取り込み時に適用）</small></div>
         <div class="mini" id="privMini"><button data-d="-100">−</button><div class="v"></div><button data-d="100">＋</button></div></div>
@@ -441,6 +536,7 @@ section.view.on{display:block}
 <nav class="tabs hidden" id="tabs"><div class="in">
   <button data-v="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>ホーム</button>
   <button data-v="log"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>記録</button>
+  <button data-v="meal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v8M4.5 3v5a2.5 2.5 0 0 0 5 0V3M7 11v10M17 21V3c-2.2 1.2-3.5 4-3.5 7.5V13H17"/></svg>食事</button>
   <button data-v="ride"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M15 6h2l3 11M5.5 17l4-8h7M9 6h3l3.5 11"/></svg>ライド</button>
   <button data-v="trend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>推移</button>
   <button data-v="set"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>設定</button>
@@ -454,6 +550,14 @@ section.view.on{display:block}
     <button class="btn ghost" id="tCancel">やめる</button>
     <button class="btn primary" id="tStop">停止して記録</button>
   </div>
+</div>
+<div id="sheet" class="hidden">
+  <div class="sh-head">
+    <button class="sh-btn" id="shCancel">キャンセル</button>
+    <div class="t" id="shTitle"></div>
+    <button class="sh-btn primary" id="shSave">保存</button>
+  </div>
+  <div class="sh-body" id="shBody"><div class="sh-in" id="shIn"></div></div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -470,6 +574,11 @@ const firebaseConfig = {
   messagingSenderId: "1021262216779",
   appId: "1:1021262216779:web:f266ab39c981c88e7657ce",
 };
+// 食事の写真判定（AI）用：reCAPTCHA v3 のサイトキー（README「AI（食事の写真判定）の初期設定」参照）
+const RECAPTCHA_SITE_KEY = 'YOUR_RECAPTCHA_SITE_KEY';
+// 使うAIモデル（左から順に試す。無料枠の上限などで失敗したら次のモデル）
+const AI_MODELS = ['gemini-3.8-flash', 'gemini-3.5-flash-lite'];
+const FB_VER = '12.19.0';
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
 import {
@@ -482,16 +591,16 @@ import {
   writeBatch, arrayUnion, arrayRemove,
 } from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
 
-const VERSION = 'v1.3.0';
+const VERSION = 'v1.4.0';
 
 // localhost で ?emu を付けて開くとFirebaseエミュレータに接続（開発用）
 const USE_EMU = ['localhost','127.0.0.1'].includes(location.hostname) && new URLSearchParams(location.search).has('emu');
 const cfg = USE_EMU ? { apiKey:'demo-key', authDomain:'demo-actlog.firebaseapp.com', projectId:'demo-actlog', appId:'demo' } : firebaseConfig;
 const CONFIGURED = USE_EMU || !String(firebaseConfig.apiKey).startsWith('YOUR_');
 
-let auth, db;
+let auth, db, fbApp;
 if (CONFIGURED) {
-  const app = initializeApp(cfg);
+  const app = fbApp = initializeApp(cfg);
   auth = getAuth(app);
   try { db = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) }); }
   catch (e) { db = initializeFirestore(app, {}); }
@@ -512,7 +621,10 @@ const DEFAULT_EXERCISES = [
   { id:'sideplank', name:'サイドプランク', type:'time', sides:true,  setsMin:2, setsMax:2, target:30, targetMax:30, on:true },
 ];
 const DEFAULT_DOGS = [ { id:'bb', name:'BB' }, { id:'mari', name:'マリ' } ];
-const DEFAULT_SETTINGS = { maxHR:182, zones:[109,138,155,168], exercises:DEFAULT_EXERCISES, privacyM:500, dogs:DEFAULT_DOGS, bpRef:{ high:[135,85], goal:[125,75] } };
+const DEFAULT_SECTIONS = { body:true, bp:true, walk:true, alcohol:true, strength:true, ride:true, meal:true };
+const DEFAULT_SETTINGS = { maxHR:182, zones:[109,138,155,168], exercises:DEFAULT_EXERCISES, privacyM:500, dogs:DEFAULT_DOGS, bpRef:{ high:[135,85], goal:[125,75] },
+  sections:DEFAULT_SECTIONS, saltTarget:7.5 };
+const SETTINGS_KEYS = ['maxHR','zones','exercises','privacyM','dogs','bpRef','sections','saltTarget'];
 const BODY_FIELDS = [
   { key:'weight', name:'体重',     unit:'kg', def:65.0, min:30, max:150 },
   { key:'fat',    name:'体脂肪率', unit:'%',  def:20.0, min:3,  max:60 },
@@ -566,8 +678,11 @@ const S = {
   rides: {},             // ライド要約 id -> data
   rideOpen: null,        // 詳細表示中のライド
   rideCache: {},         // 時系列データ
+  meals: {},             // 食事 id -> data（mealDate の日だけ）
+  mealDate: null,
+  sheet: null,           // 食事の記録・編集シート
 };
-let unsubDays = null, unsubSet = null, unsubRides = null;
+let unsubDays = null, unsubSet = null, unsubRides = null, unsubMeals = null;
 
 const dayRef = date => doc(db, 'users', S.uid, 'days', date);
 const setRef = () => doc(db, 'users', S.uid, 'settings', 'main');
@@ -599,7 +714,7 @@ $('emailForm').onsubmit = e => { e.preventDefault(); $('authErr').textContent=''
 $('btnSignup').onclick = () => { $('authErr').textContent=''; createUserWithEmailAndPassword(auth, $('email').value.trim(), $('pass').value).catch(authErr); };
 $('btnLogout').onclick = () => signOut(auth);
 
-function stopApp() { unsubDays?.(); unsubSet?.(); unsubRides?.(); unsubDays = unsubSet = unsubRides = null; S.days = {}; S.rides = {}; S.rideCache = {}; S.rideOpen = null; S.uid = null; }
+function stopApp() { unsubDays?.(); unsubSet?.(); unsubRides?.(); unsubMeals?.(); unsubDays = unsubSet = unsubRides = unsubMeals = null; S.days = {}; S.rides = {}; S.rideCache = {}; S.rideOpen = null; S.meals = {}; S.mealDate = null; closeSheet(); S.uid = null; }
 
 function startApp() {
   $('auth').classList.add('hidden'); $('app').classList.remove('hidden'); $('tabs').classList.remove('hidden');
@@ -619,6 +734,7 @@ function startApp() {
   unsubSet = onSnapshot(setRef(), snap => {
     const d = snap.data();
     S.settings = { ...structuredClone(DEFAULT_SETTINGS), ...(d||{}) };
+    S.settings.sections = { ...DEFAULT_SECTIONS, ...(S.settings.sections || {}) };
     render();
   });
   render();
@@ -640,14 +756,36 @@ function go(v) {
 $('dPrev').onclick = () => { S.date = addDays(S.date, -1); render(); };
 $('dNext').onclick = () => { if (S.date < todayStr()) { S.date = addDays(S.date, 1); render(); } };
 
+// 表示する項目（設定でユーザーごとにオン/オフ）
+const SECTIONS = [
+  { k:'body',     name:'体組成' },
+  { k:'bp',       name:'血圧' },
+  { k:'walk',     name:'散歩',   sub:'犬の設定も' },
+  { k:'alcohol',  name:'飲酒' },
+  { k:'strength', name:'筋トレ', sub:'メニューの設定も' },
+  { k:'ride',     name:'ライド', sub:'ライドタブ・心拍ゾーンの設定も' },
+  { k:'meal',     name:'食事',   sub:'食事タブ（写真でカロリーを記録）' },
+];
+const secOn = k => (S.settings.sections || {})[k] !== false;
+function applySections() {
+  [['ride','ride'], ['meal','meal']].forEach(([v, k]) => document.querySelector(`#tabs [data-v=${v}]`).classList.toggle('hidden', !secOn(k)));
+  [['card-body','body'], ['card-bp','bp'], ['card-walk','walk'], ['card-alcohol','alcohol'], ['card-strength','strength'],
+   ['set-meal','meal'], ['set-zone','ride'], ['set-ride','ride'], ['set-ex','strength'], ['set-dog','walk'], ['set-bpref','bp']]
+    .forEach(([id, k]) => $(id).classList.toggle('hidden', !secOn(k)));
+  if ((S.view === 'ride' && !secOn('ride')) || (S.view === 'meal' && !secOn('meal'))) { go('home'); return false; }
+  return true;
+}
+
 function render() {
   if (!S.uid) return;
-  $('datebar').classList.toggle('hidden', S.view !== 'log');
+  if (!applySections()) return;
+  $('datebar').classList.toggle('hidden', S.view !== 'log' && S.view !== 'meal');
   const d = parseDs(S.date);
   $('dLabel').innerHTML = `${d.getMonth()+1}/${d.getDate()}<small>(${WD[d.getDay()]})</small>` + (S.date===todayStr() ? '' : '');
   $('dNext').disabled = S.date >= todayStr();
   if (S.view === 'home') renderHome();
   if (S.view === 'log') renderLog();
+  if (S.view === 'meal') renderMeal();
   if (S.view === 'set') renderSettings();
   if (S.view === 'ride') renderRides();
   if (S.view === 'trend') renderTrend();
@@ -709,6 +847,8 @@ function renderAlcohol() {
   const a = (S.days[S.date]||{}).alcohol;
   $('alcNo').classList.toggle('on', a === false);
   $('alcYes').classList.toggle('on', a === true);
+  const g = (S.days[S.date]||{}).meal?.alcG;
+  $('alcNote').textContent = g ? `純アルコール ${g}g（食事の記録から）` : '';
 }
 function setAlcohol(v) {
   const cur = (S.days[S.date]||{}).alcohol;
@@ -910,6 +1050,460 @@ function renderWalk() {
 function renderLog() { renderBody(); renderBp(); renderWalk(); renderAlcohol(); renderExercises(); }
 
 // ═══════════════════════════════════════════════
+//  食事：写真 → AI判定 → 量・サイズ・濃さの確認 → 当日合計
+// ═══════════════════════════════════════════════
+const MEAL_SLOT = { b:'朝', l:'昼', s:'間食', d:'夜' };
+const slotNow = () => { const h = new Date().getHours(); return h >= 4 && h < 10 ? 'b' : h >= 10 && h < 15 ? 'l' : h >= 15 && h < 17 ? 's' : 'd'; };
+const GROUPS = ['主食','主菜','副菜','汁物','果物','乳製品','菓子・嗜好品','飲み物'];
+const BAL_GROUPS = ['主食','主菜','副菜','果物','乳製品'];   // 食事バランスガイドの区分
+const VEG = ['緑黄色野菜','淡色野菜','根菜','きのこ','海藻','豆類','いも'];
+const PORTIONS = [[0.5,'半分'],[0.75,'少なめ'],[1,'普通'],[1.25,'多め'],[1.5,'大盛り']];
+// お酒の種類ごとのサイズ・度数の候補（一般的な目安。確認画面でml・%を細かく調整できる）
+const DRINKS = {
+  beer:     { name:'ビール類',   abv:5,  abvs:[[4,'4%'],[5,'5%'],[6,'6%'],[7,'7%'],[8,'8%'],[9,'9%']], sizes:[['缶',350],['ロング缶',500],['中ジョッキ',400],['グラス',200],['中瓶',500],['大瓶',633]] },
+  highball: { name:'ハイボール', abv:7,  abvs:[[5,'薄め'],[7,'普通'],[9,'濃いめ']], sizes:[['缶',350],['ロング缶',500],['ジョッキ',400],['グラス',300]] },
+  sour:     { name:'サワー・チューハイ', abv:5, abvs:[[3,'薄め'],[5,'普通'],[7,'濃いめ'],[9,'ストロング']], sizes:[['缶',350],['ロング缶',500],['ジョッキ',400],['グラス',300]] },
+  sake:     { name:'日本酒',     abv:15, abvs:[[13,'13%'],[15,'15%'],[17,'17%']], sizes:[['おちょこ',45],['グラス',120],['1合',180],['2合',360]] },
+  wine:     { name:'ワイン',     abv:12, abvs:[[11,'11%'],[12,'12%'],[13,'13%'],[14,'14%']], sizes:[['グラス',120],['ハーフ',375],['ボトル',750]] },
+  shochu:   { name:'焼酎',       abv:12, abvs:[[8,'水割り薄め'],[12,'水割り'],[25,'ロック']], sizes:[['ロック',90],['グラス',200],['ジョッキ',400]] },
+  whisky:   { name:'ウイスキー', abv:40, abvs:[[40,'40%'],[43,'43%'],[46,'46%']], sizes:[['シングル',30],['ダブル',60]] },
+  other:    { name:'その他のお酒', abv:5, abvs:[[3,'3%'],[5,'5%'],[7,'7%'],[9,'9%'],[12,'12%'],[15,'15%']], sizes:[['缶',350],['ロング缶',500],['グラス',200],['ジョッキ',400]] },
+};
+const ALC_KCAL = 7;   // アルコール1gあたりのエネルギー（目安）
+const ICON_PLATE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v8M4.5 3v5a2.5 2.5 0 0 0 5 0V3M7 11v10M17 21V3c-2.2 1.2-3.5 4-3.5 7.5V13H17"/></svg>';
+
+// 計算
+function itemCalc(it) {
+  if (it.alc) {
+    const g = it.alc.ml * it.alc.abv / 100 * 0.8;           // 純アルコール量(g) = 量 × 度数 × 0.8
+    const other = it.alc.ml / 100 * (it.alc.other || 0);    // 糖質などアルコール以外の分
+    return { kcal:g * ALC_KCAL + other, p:0, f:0, c:other / 4, salt:0, alcG:g };
+  }
+  const b = it.base, k = it.factor ?? 1;
+  return { kcal:b.kcal * k, p:b.p * k, f:b.f * k, c:b.c * k, salt:b.salt * k, alcG:0 };
+}
+const roundT = t => ({ kcal:Math.round(t.kcal), p:r1(t.p), f:r1(t.f), c:r1(t.c), salt:r1(t.salt), alcG:r1(t.alcG) });
+function sumItems(items) {
+  const t = { kcal:0, p:0, f:0, c:0, salt:0, alcG:0 };
+  items.forEach(it => { const c = itemCalc(it); for (const k in t) t[k] += c[k]; });
+  return roundT(t);
+}
+function daySummary(list) {
+  const t = { kcal:0, p:0, f:0, c:0, salt:0, alcG:0 }, groups = Object.fromEntries(GROUPS.map(g => [g, 0])), veg = new Set();
+  list.forEach(m => {
+    for (const k in t) t[k] += m.total?.[k] || 0;
+    (m.items || []).forEach(it => { if (groups[it.group] != null) groups[it.group]++; (it.vegKinds || []).forEach(v => veg.add(v)); });
+  });
+  return { ...roundT(t), n:list.length, groups, veg:[...veg] };
+}
+
+// データ
+const mealCol = () => collection(db, 'users', S.uid, 'meals');
+function subMeals(date) {
+  if (S.mealDate === date) return;
+  unsubMeals?.(); S.meals = {}; S.mealDate = date; S.mealsReady = false;
+  unsubMeals = onSnapshot(query(mealCol(), where('date', '==', date)), snap => {
+    snap.docChanges().forEach(ch => { if (ch.type === 'removed') delete S.meals[ch.doc.id]; else S.meals[ch.doc.id] = { ...ch.doc.data(), id:ch.doc.id }; });
+    S.mealsReady = true;
+    if (S.view === 'meal') renderMeal();
+  }, e => { console.error(e); toast('食事の記録を読み込めませんでした'); });
+}
+const mealsOf = date => Object.values(S.meals).filter(m => m.date === date).sort((a, b) => (a.at || 0) - (b.at || 0));
+// 食事の保存・削除と、その日の合計（days/{date}.meal）の更新をまとめて行う
+function commitMeals(date, upserts = [], removes = []) {
+  const ids = new Set([...removes, ...upserts.map(m => m.id)]);
+  const list = mealsOf(date).filter(m => !ids.has(m.id)).concat(upserts);
+  const b = writeBatch(db);
+  upserts.forEach(({ id, ...data }) => b.set(doc(mealCol(), id), { ...data, updatedAt:serverTimestamp() }));
+  removes.forEach(id => b.delete(doc(mealCol(), id)));
+  const patch = { date, updatedAt:serverTimestamp(), meal: list.length ? daySummary(list) : deleteField() };
+  if (upserts.some(m => m.items.some(it => it.alc && it.alc.abv > 0))) patch.alcohol = true;   // お酒を記録したら飲酒「あり」
+  b.set(dayRef(date), patch, { merge:true });
+  return b.commit().catch(e => { console.error(e); toast('保存に失敗しました'); });
+}
+const cleanItem = it => ({
+  name:it.name || '名称なし', kind:it.kind || 'food', amount:it.amount || '', group:it.group || '', vegKinds:it.vegKinds || [],
+  base:{ kcal:it.base?.kcal || 0, p:it.base?.p || 0, f:it.base?.f || 0, c:it.base?.c || 0, salt:it.base?.salt || 0 }, factor:it.factor ?? 1,
+  alc: it.alc ? { type:it.alc.type, ml:it.alc.ml, abv:it.alc.abv, other:it.alc.other || 0, fromLabel:{ ml:!!it.alc.fromLabel?.ml, abv:!!it.alc.fromLabel?.abv } } : null,
+  manual:!!it.manual,
+});
+
+// 写真：AIに送る用（長辺1024px）と、保存するサムネイル（正方形200px）を作る
+async function prepImage(file) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = new Image(); img.src = url; await img.decode();
+    const W = img.naturalWidth, H = img.naturalHeight;
+    const s = Math.min(1, 1024 / Math.max(W, H));
+    const c1 = document.createElement('canvas'); c1.width = Math.round(W * s); c1.height = Math.round(H * s);
+    c1.getContext('2d').drawImage(img, 0, 0, c1.width, c1.height);
+    const preview = c1.toDataURL('image/jpeg', 0.8);
+    const side = Math.min(W, H), c2 = document.createElement('canvas'); c2.width = c2.height = 200;
+    c2.getContext('2d').drawImage(img, (W - side) / 2, (H - side) / 2, side, side, 0, 0, 200, 200);
+    return { preview, ai:preview.split(',')[1], thumb:c2.toDataURL('image/jpeg', 0.7) };
+  } finally { URL.revokeObjectURL(url); }
+}
+
+// AI（Firebase AI Logic 経由の Gemini。無料枠）
+const AI_SYS = `あなたは日本の食事（家庭料理・外食・コンビニ・市販品）とお酒に詳しい栄養推定アシスタントです。写真または文章から飲食物を品目ごとに分けて推定し、指定のJSONで返してください。
+- 定食やワンプレートは、ご飯・汁物・主菜・副菜など品目ごとに分ける。同じものが複数あれば1品目にまとめ、数を量に含める
+- 量は器や大きさから推定してamountに書く（例：茶碗1杯 約150g）。kcal・protein・fat・carbs・salt（食塩相当量）はその量あたりの値
+- 揚げ油、ドレッシング、ソース、調味料の分も含めて見積もる
+- 市販品で栄養成分表示や商品名が読み取れる場合は、その値と内容量を優先する
+- groupは食事バランスガイドの考え方で分類する（主食＝ご飯・パン・麺、主菜＝肉・魚・卵・大豆料理、副菜＝野菜・きのこ・いも・海藻の料理、汁物、果物、乳製品、菓子・嗜好品、飲み物）
+- vegKindsには含まれる野菜などの種類を入れる（なければ空）
+- お酒はalcohol.isAlcohol=true。drinkTypeは beer=ビール・発泡酒、highball=ハイボール、sour=サワー・チューハイ・カクテル、sake=日本酒、wine=ワイン、shochu=焼酎の水割り等、whisky=ウイスキーのストレート・ロック、other=その他
+- お酒の volumeMl と abv は、缶・瓶・ラベルなどから読み取れた場合だけ入れ、読み取れない場合は0にする（推測で入れない）
+- otherKcalPer100mlは糖質などアルコール以外のエネルギー（無糖のハイボールなら0に近い）。お酒のkcal・protein・fat・carbsは0でよい
+- お酒以外の飲み物はalcoholを省略する
+- 飲食物が写っていない場合はitemsを空にし、noteに理由を書く
+- noteには推定の注意点を1文で書く（例：揚げ油の量で前後します）`;
+function mealSchema(Sc) {
+  const num = d => Sc.number({ description:d });
+  return Sc.object({
+    properties: {
+      items: Sc.array({ items: Sc.object({
+        properties: {
+          name: Sc.string({ description:'料理名・商品名（日本語）' }),
+          kind: Sc.enumString({ enum:['food','drink'] }),
+          amount: Sc.string({ description:'推定した量' }),
+          kcal: num('エネルギー kcal'), protein: num('たんぱく質 g'), fat: num('脂質 g'), carbs: num('炭水化物 g'), salt: num('食塩相当量 g'),
+          group: Sc.enumString({ enum:GROUPS }),
+          vegKinds: Sc.array({ items: Sc.enumString({ enum:VEG }) }),
+          alcohol: Sc.object({
+            properties: {
+              isAlcohol: Sc.boolean(),
+              drinkType: Sc.enumString({ enum:Object.keys(DRINKS) }),
+              volumeMl: num('読み取れた容量ml（読み取れない場合は0）'),
+              abv: num('読み取れたアルコール度数%（読み取れない場合は0）'),
+              otherKcalPer100ml: num('アルコール以外のエネルギー kcal/100ml'),
+            },
+            optionalProperties: ['drinkType','volumeMl','abv','otherKcalPer100ml'],
+          }),
+        },
+        optionalProperties: ['vegKinds','alcohol'],
+      }) }),
+      note: Sc.string({ description:'推定の注意点（1文）' }),
+    },
+    optionalProperties: ['note'],
+  });
+}
+let aiP = null;
+function getModels() {
+  return aiP ??= (async () => {
+    if (String(RECAPTCHA_SITE_KEY).startsWith('YOUR_')) throw new Error('AI_NOT_READY');
+    const [ac, ai] = await Promise.all([
+      import(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-app-check.js`),
+      import(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-ai.js`),
+    ]);
+    ac.initializeAppCheck(fbApp, { provider:new ac.ReCaptchaV3Provider(RECAPTCHA_SITE_KEY), isTokenAutoRefreshEnabled:true });
+    const inst = ai.getAI(fbApp, { backend:new ai.GoogleAIBackend() });
+    const responseSchema = mealSchema(ai.Schema);
+    return AI_MODELS.map(model => ai.getGenerativeModel(inst, { model, systemInstruction:AI_SYS, generationConfig:{ responseMimeType:'application/json', responseSchema } }));
+  })().catch(e => { aiP = null; throw e; });
+}
+async function aiEstimate({ image, text }) {
+  if (USE_EMU) return mockAI(text);
+  const models = await getModels();
+  const parts = image ? [{ inlineData:{ mimeType:'image/jpeg', data:image } }, '写真に写っている飲食物を推定してください。'] : [`次の飲食物を推定してください：${text}`];
+  let last;
+  for (const m of models) {
+    try { const r = await m.generateContent(parts); return parseAI(r.response.text()); }
+    catch (e) {
+      last = e; console.error(e);
+      const st = e?.customErrorData?.status;
+      if (!(st === 429 || st === 404 || st === 500 || st === 503)) break;   // 上限・モデル終了・混雑のときだけ次のモデルへ
+    }
+  }
+  throw last;
+}
+function parseAI(txt) {
+  let j;
+  try { j = JSON.parse(txt); } catch (e) { const m = String(txt).match(/\{[\s\S]*\}/); if (!m) throw new Error('AI_PARSE'); j = JSON.parse(m[0]); }
+  const n = v => Math.max(0, Number(v) || 0);
+  const items = (Array.isArray(j.items) ? j.items : []).slice(0, 20).map(x => {
+    const it = {
+      name:String(x.name || '不明').slice(0, 40), kind:x.kind === 'drink' ? 'drink' : 'food', amount:String(x.amount || '').slice(0, 60),
+      group:GROUPS.includes(x.group) ? x.group : (x.kind === 'drink' ? '飲み物' : ''),
+      vegKinds:(Array.isArray(x.vegKinds) ? x.vegKinds : []).filter(v => VEG.includes(v)),
+      base:{ kcal:n(x.kcal), p:n(x.protein), f:n(x.fat), c:n(x.carbs), salt:n(x.salt) }, factor:1, alc:null,
+    };
+    const a = x.alcohol;
+    if (a && a.isAlcohol) {
+      const type = DRINKS[a.drinkType] ? a.drinkType : 'other', P = DRINKS[type];
+      const ml = n(a.volumeMl), abv = n(a.abv), okMl = ml >= 10 && ml <= 3000, okAbv = abv > 0 && abv <= 70;
+      it.alc = { type, ml:okMl ? Math.round(ml) : P.sizes[0][1], abv:okAbv ? r1(abv) : P.abv, other:Math.min(100, n(a.otherKcalPer100ml)), fromLabel:{ ml:okMl, abv:okAbv } };
+      it.kind = 'drink'; it.group = '飲み物';
+    }
+    return it;
+  });
+  return { items, note:String(j.note || '').slice(0, 200) };
+}
+function aiErrMsg(e) {
+  const st = e?.customErrorData?.status, code = String(e?.code || ''), m = String(e?.message || '');
+  if (m === 'AI_NOT_READY') return 'AIの初期設定がまだです（README「AI（食事の写真判定）の初期設定」）';
+  if (m === 'AI_PARSE') return 'AIの返答を読み取れませんでした。もう一度試してください';
+  if (st === 429) return 'AIの無料枠の上限に達しました。時間をおいて試すか、手入力してください';
+  if (code.includes('api-not-enabled')) return 'AI Logic が有効になっていません（Firebaseコンソールで設定）';
+  if (st === 401 || st === 403 || /app.?check/i.test(m)) return 'AIの利用確認（App Check）に失敗しました。設定を確認してください';
+  if (!navigator.onLine || code.includes('fetch-error')) return '通信できませんでした。電波の良い場所でもう一度試してください';
+  return `AIで判定できませんでした（${st || code || m.slice(0, 60)}）`;
+}
+// 開発用（?emu）：AIの代わりに固定の結果を返す
+function mockAI(text) {
+  const j = text ? { items:[{ name:text, kind:'food', amount:'1人前', kcal:420, protein:15, fat:12, carbs:60, salt:2.1, group:'主食' }], note:'' } : { items:[
+    { name:'ご飯', kind:'food', amount:'茶碗1杯 約150g', kcal:234, protein:3.8, fat:0.5, carbs:55.7, salt:0, group:'主食' },
+    { name:'鶏の唐揚げ', kind:'food', amount:'4個 約120g', kcal:350, protein:22, fat:22, carbs:12, salt:1.8, group:'主菜' },
+    { name:'キャベツの千切り', kind:'food', amount:'約50g', kcal:12, protein:0.6, fat:0.1, carbs:2.6, salt:0, group:'副菜', vegKinds:['淡色野菜'] },
+    { name:'わかめの味噌汁', kind:'food', amount:'1杯', kcal:40, protein:2.5, fat:1.2, carbs:4, salt:1.5, group:'汁物', vegKinds:['海藻'] },
+    { name:'ハイボール', kind:'drink', amount:'ジョッキ1杯', kcal:0, protein:0, fat:0, carbs:0, salt:0, group:'飲み物', alcohol:{ isAlcohol:true, drinkType:'highball', volumeMl:0, abv:0, otherKcalPer100ml:0 } },
+    { name:'ストロングチューハイ レモン', kind:'drink', amount:'ロング缶1本', kcal:0, protein:0, fat:0, carbs:0, salt:0, group:'飲み物', alcohol:{ isAlcohol:true, drinkType:'sour', volumeMl:500, abv:9, otherKcalPer100ml:8 } },
+  ], note:'揚げ油の量で前後します（開発用の固定データ）' };
+  return new Promise(ok => setTimeout(() => ok(parseAI(JSON.stringify(j))), 700));
+}
+
+// 食事タブ
+function renderMeal() {
+  subMeals(S.date);
+  const list = mealsOf(S.date), t = daySummary(list);
+  const salt = S.settings.saltTarget ?? 7.5;
+  const pk = { p:t.p * 4, f:t.f * 9, c:t.c * 4 }, pks = pk.p + pk.f + pk.c;
+  const pct = k => pks ? Math.round(pk[k] / pks * 100) : 0;
+  const bar = (w, c) => `<div class="bar"><i style="width:${Math.min(100, w)}%;background:${c}"></i></div>`;
+  let html = `
+    <div class="card">
+      <h2><span class="dot" style="background:var(--meal)"></span>摂取<span class="r">${S.mealsReady ? t.n + '件' : '読み込み中…'}</span></h2>
+      <div class="kbig"><span class="v">${t.kcal.toLocaleString()}</span><span class="u">kcal</span></div>
+      <div class="label">消費カロリーとの差は、次の段階で表示します</div>
+      <div class="pfc">
+        <div class="row">たんぱく質${bar(pct('p'), 'var(--ride)')}<span class="num">${t.p}<small>g</small> <small>${pct('p')}%</small></span></div>
+        <div class="row">脂質${bar(pct('f'), 'var(--walk)')}<span class="num">${t.f}<small>g</small> <small>${pct('f')}%</small></span></div>
+        <div class="row">炭水化物${bar(pct('c'), 'var(--body)')}<span class="num">${t.c}<small>g</small> <small>${pct('c')}%</small></span></div>
+        <div class="row">塩分${bar(t.salt / salt * 100, t.salt >= salt ? 'var(--drink)' : 'var(--sober)')}<span class="num" style="${t.salt >= salt ? 'color:var(--drink)' : ''}">${t.salt}<small>/${salt}g</small></span></div>
+        ${t.alcG ? `<div class="row">純アルコール<span></span><span class="num">${t.alcG}<small>g</small></span></div>` : ''}
+      </div>
+      <div class="label" style="margin-top:6px">%はエネルギー比。塩分は目標量（設定で変更）に対する量です</div>
+      <div class="groups">${BAL_GROUPS.map(g => `<span class="${t.groups[g] ? 'on' : ''}">${g}<b>${t.groups[g] || 0}</b></span>`).join('')}${t.veg.map(v => `<span class="veg">${esc(v)}</span>`).join('')}</div>
+    </div>
+    <div class="card">
+      <h2>記録する</h2>
+      <div class="cap2">
+        <label class="btn mealbtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>撮影する<input type="file" id="mealCam" accept="image/*" capture="environment" hidden></label>
+        <label class="btn ghost"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></svg>写真を選ぶ<input type="file" id="mealPick" accept="image/*" hidden></label>
+      </div>
+      <button class="linkbtn" id="mealText" style="margin-top:6px">写真なしで記録する（料理名を入力 → AIが推定）</button>
+    </div>`;
+  html += '<div class="card"><h2>記録<span class="r">タップで編集</span></h2>';
+  if (list.length) {
+    for (const [sk, sn] of Object.entries(MEAL_SLOT)) {
+      const ms = list.filter(m => m.slot === sk);
+      if (!ms.length) continue;
+      html += `<div class="slot-h"><span>${sn}</span><span class="num">${ms.reduce((n, m) => n + (m.total?.kcal || 0), 0).toLocaleString()} kcal</span></div>`;
+      html += ms.map(m => {
+        const d = new Date(m.at || Date.now()), drinkOnly = m.items.length && m.items.every(it => it.alc);
+        return `<div class="meal-row">
+          <button class="ph" data-edit="${m.id}" style="${m.thumb ? `background-image:url(${m.thumb})` : ''}" aria-label="編集">${m.thumb ? '' : ICON_PLATE}</button>
+          <button class="body" data-edit="${m.id}"><div class="nm">${m.items.map(it => esc(it.name)).join('、')}</div>
+            <div class="meta">${d.getHours()}:${pad(d.getMinutes())} · P${m.total.p} F${m.total.f} C${m.total.c} · 塩分${m.total.salt}g${m.total.alcG ? ` · 酒${m.total.alcG}g` : ''}</div></button>
+          <div class="rt"><div class="kc">${(m.total?.kcal || 0).toLocaleString()}<small>kcal</small></div><button class="again" data-again="${m.id}">${drinkOnly ? 'もう1杯' : 'もう1つ'}</button></div>
+        </div>`;
+      }).join('');
+    }
+  } else {
+    html += `<div class="empty">${S.mealsReady ? 'まだ記録がありません' : '読み込み中…'}</div>`;
+  }
+  html += '</div>';
+  $('v-meal').innerHTML = html;
+  const onFile = e => { const f = e.target.files[0]; e.target.value = ''; if (f) onPhoto(f); };
+  $('mealCam').onchange = onFile; $('mealPick').onchange = onFile;
+  $('mealText').onclick = () => { openSheet(newSheet({ status:'edit', src:'text' })); setTimeout(() => $('shAddText')?.focus(), 50); };
+  $('v-meal').querySelectorAll('[data-edit]').forEach(b => b.onclick = () => editMeal(b.dataset.edit));
+  $('v-meal').querySelectorAll('[data-again]').forEach(b => b.onclick = () => againMeal(b.dataset.again));
+}
+
+// 記録・編集シート
+const newSheet = o => ({ mode:'new', date:S.date, slot:slotNow(), at:Date.now(), items:[], note:'', thumb:null, preview:null, img:null, ...o });
+function openSheet(sh) { S.sheet = sh; $('sheet').classList.remove('hidden'); document.body.style.overflow = 'hidden'; $('shBody').scrollTop = 0; renderSheet(); }
+function closeSheet() { S.sheet = null; $('sheet').classList.add('hidden'); document.body.style.overflow = ''; }
+async function onPhoto(file) {
+  const sh = newSheet({ status:'loading', src:'photo' });
+  openSheet(sh);
+  try { Object.assign(sh, await prepImage(file)); }
+  catch (e) { console.error(e); sh.status = 'error'; sh.err = '写真を読み込めませんでした'; return renderSheet(); }
+  runAI(sh);
+}
+async function runAI(sh) {
+  sh.status = 'loading'; sh.err = ''; renderSheet();
+  try {
+    const r = await aiEstimate({ image:sh.img });
+    if (S.sheet !== sh) return;
+    sh.items = r.items; sh.note = r.note; sh.status = 'edit';
+    if (!r.items.length) sh.err = '飲食物が見つかりませんでした。下の入力欄から追加できます';
+  } catch (e) {
+    if (S.sheet !== sh) return;
+    sh.status = 'error'; sh.err = aiErrMsg(e);
+  }
+  renderSheet();
+}
+function editMeal(id) {
+  const m = S.meals[id]; if (!m) return;
+  openSheet({ mode:'edit', id, status:'edit', date:m.date, slot:m.slot, at:m.at, items:structuredClone(m.items), note:m.note || '', thumb:m.thumb || null, src:m.src || '', createdAt:m.createdAt ?? null });
+}
+// 「もう1杯/もう1つ」：同じ内容で新しい記録を作り、確認画面を開く（サイズ・濃さを変えられる）
+function againMeal(id) {
+  const m = S.meals[id]; if (!m) return;
+  openSheet(newSheet({ status:'edit', items:structuredClone(m.items), thumb:m.thumb || null, note:m.note || '', src:'again', slot:S.date === todayStr() ? slotNow() : m.slot }));
+}
+
+function itemHtml(it, i) {
+  const c = itemCalc(it);
+  let h = `<div class="item" data-i="${i}">
+    <div class="ih"><input value="${esc(it.name)}" data-a="name" maxlength="40" aria-label="品名"><div class="ik" data-a="kc">${Math.round(c.kcal)}<small>kcal</small></div><button class="x" data-a="del" aria-label="この品目を外す">×</button></div>`;
+  if (it.alc) {
+    const P = DRINKS[it.alc.type] || DRINKS.other;
+    h += `<div class="sub">種類</div><select data-a="type">${Object.entries(DRINKS).map(([k, d]) => `<option value="${k}" ${k === it.alc.type ? 'selected' : ''}>${d.name}</option>`).join('')}</select>
+      <div class="sub">サイズ${it.alc.fromLabel?.ml ? '<span class="tagai">ラベルから読取</span>' : ''}</div>
+      <div class="schips" style="${P.sizes.length === 4 ? 'grid-template-columns:repeat(4,1fr)' : ''}">${P.sizes.map(([nm, ml]) => `<button data-ml="${ml}" class="${it.alc.ml === ml ? 'on' : ''}">${nm}<small>${ml}ml</small></button>`).join('')}</div>
+      <div class="astep"><button data-a="ml" data-d="-10">−10</button><div class="v" data-a="mlV">${it.alc.ml}<small>ml</small></div><button data-a="ml" data-d="10">+10</button></div>
+      <div class="sub">濃さ（度数）${it.alc.fromLabel?.abv ? '<span class="tagai">ラベルから読取</span>' : ''}</div>
+      <div class="schips" style="${P.abvs.length === 4 ? 'grid-template-columns:repeat(4,1fr)' : ''}">${P.abvs.map(([v, l]) => `<button data-abv="${v}" class="${it.alc.abv === v ? 'on' : ''}">${l}<small>${v}%</small></button>`).join('')}</div>
+      <div class="astep"><button data-a="abv" data-d="-0.5">−0.5</button><div class="v" data-a="abvV">${it.alc.abv}<small>%</small></div><button data-a="abv" data-d="0.5">+0.5</button></div>
+      <div class="amt" data-a="alcg" style="margin-top:10px">純アルコール ${r1(c.alcG)}g</div>`;
+  } else if (it.manual) {
+    h += `<div class="sub">カロリー（手入力）</div>
+      <div class="astep w5"><button data-a="kcal" data-d="-50">−50</button><button data-a="kcal" data-d="-10">−10</button><div class="v" data-a="kcalV">${it.base.kcal}<small>kcal</small></div><button data-a="kcal" data-d="10">+10</button><button data-a="kcal" data-d="50">+50</button></div>`;
+  } else {
+    h += `<div class="amt">AIの推定：${esc(it.amount || '—')}${it.group ? ` · ${esc(it.group)}` : ''}${(it.vegKinds || []).length ? ` · ${it.vegKinds.map(esc).join('・')}` : ''}</div>
+      <div class="pchips">${PORTIONS.map(([f, l]) => `<button data-f="${f}" class="${(it.factor ?? 1) === f ? 'on' : ''}">${l}<small>×${f}</small></button>`).join('')}</div>`;
+  }
+  return h + '</div>';
+}
+function sheetSumHtml(items) {
+  const t = sumItems(items);
+  return `<div class="k">${t.kcal.toLocaleString()}<small>kcal</small></div>
+    <div class="d">P ${t.p}g · F ${t.f}g · C ${t.c}g · 塩分 ${t.salt}g${t.alcG ? ` · 純アルコール ${t.alcG}g` : ''}</div>`;
+}
+function renderSheet() {
+  const sh = S.sheet; if (!sh) return;
+  const keep = $('shBody').scrollTop;
+  $('shTitle').textContent = sh.mode === 'edit' ? '記録を編集' : sh.src === 'again' ? (sh.items.length && sh.items.every(it => it.alc) ? 'もう1杯記録' : 'もう1つ記録') : '食事を記録';
+  $('shSave').disabled = sh.status !== 'edit' || !sh.items.length || sh.busy;
+  const photo = sh.preview || sh.thumb;
+  let h = photo ? `<img class="sh-photo" src="${photo}" alt="">` : '';
+  if (sh.status === 'loading') {
+    h += `<div class="spin"></div><div class="sh-msg">AIが判定中…（数秒〜十数秒）</div>`;
+  } else if (sh.status === 'error') {
+    h += `<div class="sh-err">${esc(sh.err)}</div>
+      <div class="cap2">${sh.img ? '<button class="btn primary" id="shRetry">もう一度判定</button>' : ''}<button class="btn ghost" id="shManual">入力して記録</button></div>`;
+  } else {
+    h += `<div class="sub label" style="margin:14px 2px 6px;font-weight:700">時間帯</div>
+      <div class="seg" id="shSlot">${Object.entries(MEAL_SLOT).map(([k, v]) => `<button data-s="${k}" class="${sh.slot === k ? 'on' : ''}">${v}</button>`).join('')}</div>`;
+    if (sh.err) h += `<div class="sh-err">${esc(sh.err)}</div>`;
+    if (sh.note) h += `<div class="label" style="margin:10px 2px 0">AIのメモ：${esc(sh.note)}</div>`;
+    h += sh.items.map(itemHtml).join('');
+    h += `<div class="addrow"><input id="shAddText" placeholder="品目を追加（例：おにぎり 鮭 1個）" maxlength="60" enterkeyhint="done">
+        <button class="btn ghost" id="shAddAI" ${sh.busy ? 'disabled' : ''}>${sh.busy ? '推定中…' : 'AIで追加'}</button></div>
+      <button class="linkbtn" id="shAddManual">カロリーを自分で入れて追加</button>`;
+    if (sh.items.length) h += `<div class="sh-sum" id="shSum">${sheetSumHtml(sh.items)}</div>`;
+    if (sh.mode === 'edit') h += `<button class="btn danger" id="shDel" style="margin-top:16px">この記録を削除</button>`;
+  }
+  $('shIn').innerHTML = h;
+  $('shBody').scrollTop = keep;
+  bindSheet(sh);
+}
+function bindSheet(sh) {
+  const q = id => $(id);
+  q('shRetry') && (q('shRetry').onclick = () => runAI(sh));
+  q('shManual') && (q('shManual').onclick = () => { sh.status = 'edit'; sh.err = ''; renderSheet(); });
+  if (sh.status !== 'edit') return;
+  q('shSlot').querySelectorAll('button').forEach(b => b.onclick = () => { sh.slot = b.dataset.s; renderSheet(); });
+  const refreshSum = () => { const s = q('shSum'); if (s) s.innerHTML = sheetSumHtml(sh.items); };
+  $('shIn').querySelectorAll('.item').forEach(el => {
+    const it = sh.items[Number(el.dataset.i)];
+    const upd = () => {
+      const c = itemCalc(it);
+      el.querySelector('[data-a=kc]').innerHTML = `${Math.round(c.kcal)}<small>kcal</small>`;
+      if (it.alc) {
+        el.querySelector('[data-a=mlV]').innerHTML = `${it.alc.ml}<small>ml</small>`;
+        el.querySelector('[data-a=abvV]').innerHTML = `${it.alc.abv}<small>%</small>`;
+        el.querySelector('[data-a=alcg]').textContent = `純アルコール ${r1(c.alcG)}g`;
+        el.querySelectorAll('[data-ml]').forEach(b => b.classList.toggle('on', Number(b.dataset.ml) === it.alc.ml));
+        el.querySelectorAll('[data-abv]').forEach(b => b.classList.toggle('on', Number(b.dataset.abv) === it.alc.abv));
+      }
+      if (it.manual) el.querySelector('[data-a=kcalV]').innerHTML = `${it.base.kcal}<small>kcal</small>`;
+      el.querySelectorAll('[data-f]').forEach(b => b.classList.toggle('on', Number(b.dataset.f) === (it.factor ?? 1)));
+      refreshSum();
+    };
+    el.querySelector('[data-a=name]').oninput = e => { it.name = e.target.value; };
+    let armed = false;
+    el.querySelector('[data-a=del]').onclick = e => {
+      if (!armed) { armed = true; e.target.textContent = '外す'; e.target.style.width = '44px'; setTimeout(() => { armed = false; if (e.target.isConnected) { e.target.textContent = '×'; e.target.style.width = ''; } }, 2500); return; }
+      sh.items.splice(Number(el.dataset.i), 1); renderSheet();
+    };
+    el.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { it.factor = Number(b.dataset.f); upd(); });
+    el.querySelectorAll('[data-ml]').forEach(b => b.onclick = () => { it.alc.ml = Number(b.dataset.ml); it.alc.fromLabel.ml = false; upd(); });
+    el.querySelectorAll('[data-abv]').forEach(b => b.onclick = () => { it.alc.abv = Number(b.dataset.abv); it.alc.fromLabel.abv = false; upd(); });
+    el.querySelectorAll('[data-a=ml]').forEach(b => holdRepeat(b, () => { it.alc.ml = Math.min(3000, Math.max(10, it.alc.ml + Number(b.dataset.d))); upd(); }));
+    el.querySelectorAll('[data-a=abv]').forEach(b => holdRepeat(b, () => { it.alc.abv = Math.min(70, Math.max(0.5, r1(it.alc.abv + Number(b.dataset.d)))); upd(); }));
+    el.querySelectorAll('[data-a=kcal]').forEach(b => holdRepeat(b, () => { it.base.kcal = Math.min(5000, Math.max(0, it.base.kcal + Number(b.dataset.d))); upd(); }));
+    const sel = el.querySelector('[data-a=type]');
+    if (sel) sel.onchange = () => {
+      const P = DRINKS[sel.value];
+      it.alc.type = sel.value;
+      if (!it.alc.fromLabel.ml) it.alc.ml = P.sizes[0][1];
+      if (!it.alc.fromLabel.abv) it.alc.abv = P.abv;
+      renderSheet();
+    };
+  });
+  const addAI = async () => {
+    const inp = q('shAddText'), text = inp.value.trim();
+    if (!text || sh.busy) return;
+    sh.busy = true; renderSheet();
+    try {
+      const r = await aiEstimate({ text });
+      if (S.sheet !== sh) return;
+      sh.items.push(...(r.items.length ? r.items : [{ name:text, kind:'food', group:'', base:{ kcal:0, p:0, f:0, c:0, salt:0 }, factor:1, manual:true }]));
+      if (!r.items.length) toast('推定できなかったので手入力にしました');
+      if (sh.err && sh.items.length) sh.err = '';
+    } catch (e) {
+      if (S.sheet !== sh) return;
+      sh.items.push({ name:text, kind:'food', group:'', base:{ kcal:0, p:0, f:0, c:0, salt:0 }, factor:1, manual:true });
+      toast(aiErrMsg(e));
+    }
+    sh.busy = false; renderSheet();
+    $('shBody').scrollTop = $('shBody').scrollHeight;
+  };
+  q('shAddAI').onclick = addAI;
+  q('shAddText').onkeydown = e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addAI(); } };
+  q('shAddManual').onclick = () => {
+    const text = q('shAddText').value.trim();
+    sh.items.push({ name:text, kind:'food', group:'', base:{ kcal:100, p:0, f:0, c:0, salt:0 }, factor:1, manual:true });
+    if (sh.err) sh.err = '';
+    renderSheet(); $('shBody').scrollTop = $('shBody').scrollHeight;
+    const ins = $('shIn').querySelectorAll('.item [data-a=name]'); if (!text) ins[ins.length - 1]?.focus();
+  };
+  if (q('shDel')) {
+    let armed = false;
+    q('shDel').onclick = e => {
+      if (!armed) { armed = true; e.target.textContent = 'もう一度押すと削除します'; setTimeout(() => { armed = false; if (e.target.isConnected) e.target.textContent = 'この記録を削除'; }, 3000); return; }
+      commitMeals(sh.date, [], [sh.id]); closeSheet(); toast('削除しました');
+    };
+  }
+}
+$('shCancel').onclick = () => closeSheet();
+$('shSave').onclick = () => {
+  const sh = S.sheet;
+  if (!sh || sh.status !== 'edit' || !sh.items.length || sh.busy) return;
+  const items = sh.items.map(cleanItem);
+  const m = { id:sh.id || doc(mealCol()).id, date:sh.date, slot:sh.slot, at:sh.at, src:sh.src || '', items, total:sumItems(items),
+    thumb:sh.thumb || null, note:sh.note || '', createdAt:sh.createdAt ?? serverTimestamp() };
+  commitMeals(sh.date, [m]);
+  if (navigator.vibrate) navigator.vibrate(15);
+  toast(`${sh.mode === 'edit' ? '更新' : '記録'}しました（${m.total.kcal.toLocaleString()} kcal）`);
+  closeSheet();
+};
+
+// ═══════════════════════════════════════════════
 //  ホーム
 // ═══════════════════════════════════════════════
 const hasStrength = day => Object.values((day||{}).sets||{}).some(a => a.length);
@@ -960,26 +1554,29 @@ function renderHome() {
   const list = activeEx(), done = list.filter(ex => exDone(day, ex)).length;
   const bpL = day.bp && (day.bp.pm ? ['夜', day.bp.pm] : day.bp.am ? ['朝', day.bp.am] : null);
   const bpTile = bpL ? `<div class="v" style="font-size:24px">${bpL[1].sys}<small>/</small>${bpL[1].dia}</div><div class="sub">${bpL[0]}${day.bp.am && day.bp.pm ? '（朝 ' + day.bp.am.sys + '/' + day.bp.am.dia + '）' : ''}</div>` : '<div class="v"><span style="color:var(--dim)">—</span></div><div class="sub">未記録</div>';
-  $('todayTiles').innerHTML = `
-    <button class="t" data-go="log"><div class="k">体重</div><div class="v">${wHtml}</div><div class="sub">${wSub}</div></button>
-    <button class="t" data-go="log"><div class="k">飲酒</div><div class="v" style="font-size:24px">${alc}</div><div class="sub">${day.alcohol==null?'未記録':''}</div></button>
-    <button class="t" data-go="log"><div class="k">筋トレ</div><div class="v" style="${done&&done===list.length?'color:var(--strength)':''}">${done}<small>/${list.length}</small></div><div class="sub">${setCount(day)} セット</div></button>
-    <button class="t" data-go="log"><div class="k">血圧</div>${bpTile}</button>
-    <button class="t" data-go="log"><div class="k">散歩</div>${hasWalk(day) ? `<div class="v">${walkMin(day)}<small>分</small></div><div class="sub">${walksOf(day).length}回</div>` : '<div class="v"><span style="color:var(--dim)">—</span></div><div class="sub">未記録</div>'}</button>
-    <button class="t" data-go="ride"><div class="k">ライド</div>${hasRide(day) ? `<div class="v">${dayKm(day).toFixed(1)}<small>km</small></div><div class="sub">${day.rides.length}本</div>` : '<div class="v"><span style="color:var(--dim)">—</span></div><div class="sub">なし</div>'}</button>`;
+  const tiles = [
+    ['body', `<button class="t" data-go="log"><div class="k">体重</div><div class="v">${wHtml}</div><div class="sub">${wSub}</div></button>`],
+    ['meal', `<button class="t" data-go="meal"><div class="k">摂取</div>${day.meal?.n ? `<div class="v">${day.meal.kcal.toLocaleString()}<small>kcal</small></div><div class="sub">${day.meal.n}件</div>` : '<div class="v"><span style="color:var(--dim)">—</span></div><div class="sub">未記録</div>'}</button>`],
+    ['alcohol', `<button class="t" data-go="log"><div class="k">飲酒</div><div class="v" style="font-size:24px">${alc}</div><div class="sub">${day.alcohol==null?'未記録':day.meal?.alcG?`純アルコール${Math.round(day.meal.alcG)}g`:''}</div></button>`],
+    ['strength', `<button class="t" data-go="log"><div class="k">筋トレ</div><div class="v" style="${done&&done===list.length?'color:var(--strength)':''}">${done}<small>/${list.length}</small></div><div class="sub">${setCount(day)} セット</div></button>`],
+    ['bp', `<button class="t" data-go="log"><div class="k">血圧</div>${bpTile}</button>`],
+    ['walk', `<button class="t" data-go="log"><div class="k">散歩</div>${hasWalk(day) ? `<div class="v">${walkMin(day)}<small>分</small></div><div class="sub">${walksOf(day).length}回</div>` : '<div class="v"><span style="color:var(--dim)">—</span></div><div class="sub">未記録</div>'}</button>`],
+    ['ride', `<button class="t" data-go="ride"><div class="k">ライド</div>${hasRide(day) ? `<div class="v">${dayKm(day).toFixed(1)}<small>km</small></div><div class="sub">${day.rides.length}本</div>` : '<div class="v"><span style="color:var(--dim)">—</span></div><div class="sub">なし</div>'}</button>`],
+  ];
+  $('todayTiles').innerHTML = tiles.filter(([k]) => secOn(k)).map(([, h]) => h).join('');
   $('todayTiles').querySelectorAll('[data-go]').forEach(b => b.onclick = () => { S.date = t; go(b.dataset.go); });
   $('todayTiles').querySelectorAll('.t').forEach(b => b.style.textAlign = 'left');
 
   // 連続
   const sober = x => x && x.alcohol === false;
   const str = x => hasStrength(x);
-  const rec = x => x && (x.weight != null || x.alcohol != null || hasStrength(x) || hasRide(x) || hasWalk(x) || !!x.bp);
+  const rec = x => x && (x.weight != null || x.alcohol != null || hasStrength(x) || hasRide(x) || hasWalk(x) || !!x.bp || !!x.meal?.n);
   const items = [
-    { k:'休肝日', c:'var(--sober)', n:streak(sober), b:bestStreak(sober) },
-    { k:'筋トレ', c:'var(--strength)', n:streak(str), b:bestStreak(str) },
-    { k:'散歩', c:'var(--walk)', n:streak(hasWalk), b:bestStreak(hasWalk) },
+    { s:'alcohol', k:'休肝日', c:'var(--sober)', n:streak(sober), b:bestStreak(sober) },
+    { s:'strength', k:'筋トレ', c:'var(--strength)', n:streak(str), b:bestStreak(str) },
+    { s:'walk', k:'散歩', c:'var(--walk)', n:streak(hasWalk), b:bestStreak(hasWalk) },
     { k:'記録', c:'var(--accent-t)', n:streak(rec), b:bestStreak(rec) },
-  ];
+  ].filter(i => !i.s || secOn(i.s));
   $('streaks').innerHTML = items.map(i => `<div class="streak" style="--c:${i.c}"><div class="k">${i.k}</div><div class="v">${i.n}<small>日</small></div><div class="best num">最長 ${i.b}日</div></div>`).join('');
 
   // 積み上げ
@@ -988,16 +1585,16 @@ function renderHome() {
   const mFrom = `${t.slice(0,7)}-01`;
   const yFrom = `${t.slice(0,4)}-01-01`;
   const W = rangeStats(wFrom, t), M = rangeStats(mFrom, t), Y = rangeStats(yFrom, t);
-  const row = (k, f, u) => `<tr><th>${k}</th>${[W,M,Y].map(s => `<td>${f(s)}<small>${u}</small></td>`).join('')}</tr>`;
+  const row = (sec, k, f, u) => secOn(sec) ? `<tr><th>${k}</th>${[W,M,Y].map(s => `<td>${f(s)}<small>${u}</small></td>`).join('')}</tr>` : '';
   $('totals').innerHTML = `<thead><tr><th></th><th>今週</th><th>今月</th><th>今年</th></tr></thead><tbody>
-    ${row('筋トレ', s=>s.strengthDays, '日')}
-    ${row('セット数', s=>s.sets, '')}
-    ${row('休肝日', s=>s.sober, '日')}
-    ${row('飲酒', s=>s.drink, '日')}
-    ${row('ライド', s=>s.rides, '回')}
-    ${row('距離', s=>Math.round(s.rideKm), 'km')}
-    ${row('散歩', s=>s.walks, '回')}
-    ${row('散歩時間', s=>(s.walkMins/60).toFixed(1), 'h')}
+    ${row('strength', '筋トレ', s=>s.strengthDays, '日')}
+    ${row('strength', 'セット数', s=>s.sets, '')}
+    ${row('alcohol', '休肝日', s=>s.sober, '日')}
+    ${row('alcohol', '飲酒', s=>s.drink, '日')}
+    ${row('ride', 'ライド', s=>s.rides, '回')}
+    ${row('ride', '距離', s=>Math.round(s.rideKm), 'km')}
+    ${row('walk', '散歩', s=>s.walks, '回')}
+    ${row('walk', '散歩時間', s=>(s.walkMins/60).toFixed(1), 'h')}
   </tbody>`;
 
   renderHeat();
@@ -1005,11 +1602,11 @@ function renderHome() {
 
 const HEAT_MODES = [
   { id:'all',      label:'総合',   c:'var(--accent)',   rgb:'200,245,96',  rgbL:'110,160,0' },
-  { id:'strength', label:'筋トレ', c:'var(--strength)', rgb:'255,138,76',  rgbL:'229,100,42' },
-  { id:'sober',    label:'休肝日', c:'var(--sober)',    rgb:'61,220,151',  rgbL:'16,164,104' },
-  { id:'ride',     label:'ライド', c:'var(--ride)',     rgb:'79,209,232',  rgbL:'14,159,187' },
-  { id:'walk',     label:'散歩',   c:'var(--walk)',     rgb:'255,194,75',  rgbL:'201,135,0' },
-  { id:'body',     label:'体組成', c:'var(--body)',     rgb:'169,139,255', rgbL:'118,86,227' },
+  { id:'strength', label:'筋トレ', c:'var(--strength)', rgb:'255,138,76',  rgbL:'229,100,42',  sec:'strength' },
+  { id:'sober',    label:'休肝日', c:'var(--sober)',    rgb:'61,220,151',  rgbL:'16,164,104',  sec:'alcohol' },
+  { id:'ride',     label:'ライド', c:'var(--ride)',     rgb:'79,209,232',  rgbL:'14,159,187',  sec:'ride' },
+  { id:'walk',     label:'散歩',   c:'var(--walk)',     rgb:'255,194,75',  rgbL:'201,135,0',   sec:'walk' },
+  { id:'body',     label:'体組成', c:'var(--body)',     rgb:'169,139,255', rgbL:'118,86,227',  sec:'body' },
 ];
 function heatLevel(mode, x) {
   if (!x) return 0;
@@ -1029,7 +1626,9 @@ function heatColor(mode, lv) {
   return `rgba(${light ? m.rgbL : m.rgb},${[0,.28,.5,.75,1][lv]})`;
 }
 function renderHeat() {
-  $('heatChips').innerHTML = HEAT_MODES.map(m => `<button data-m="${m.id}" style="--c:${m.c}" class="${S.heatMode===m.id?'on':''}">${m.label}</button>`).join('');
+  const modes = HEAT_MODES.filter(m => !m.sec || secOn(m.sec));
+  if (!modes.some(m => m.id === S.heatMode)) S.heatMode = 'all';
+  $('heatChips').innerHTML = modes.map(m => `<button data-m="${m.id}" style="--c:${m.c}" class="${S.heatMode===m.id?'on':''}">${m.label}</button>`).join('');
   $('heatChips').querySelectorAll('button').forEach(b => b.onclick = () => { S.heatMode = b.dataset.m; renderHeat(); });
   const t = todayStr(), td = parseDs(t);
   const endMon = addDays(t, -((td.getDay()+6)%7));
@@ -1078,9 +1677,14 @@ function renderSettings() {
     el.querySelector('.v').textContent = k === 'max' ? S.settings.maxHR : z[Number(k)];
     queueSettingsSave(true);
   })));
+  renderSectionSettings();
   renderExSettings();
   renderDogSettings();
   renderBpRef();
+  $('saltSeg').querySelectorAll('button').forEach(b => {
+    b.classList.toggle('on', Number(b.dataset.v) === (S.settings.saltTarget ?? 7.5));
+    b.onclick = () => { S.settings.saltTarget = Number(b.dataset.v); queueSettingsSave(); renderSettings(); };
+  });
   const pm = $('privMini');
   pm.querySelector('.v').textContent = (S.settings.privacyM ?? 500) + 'm';
   pm.querySelectorAll('button').forEach(b => { b.onpointerdown = null; });
@@ -1096,7 +1700,18 @@ function renderSettings() {
 let setT;
 function queueSettingsSave(rerender) {
   clearTimeout(setT);
-  setT = setTimeout(() => { saveSettings({ maxHR:S.settings.maxHR, zones:S.settings.zones, exercises:S.settings.exercises, privacyM:S.settings.privacyM ?? 500, dogs:S.settings.dogs, bpRef:S.settings.bpRef }); if (rerender) renderSettings(); }, 700);
+  setT = setTimeout(() => { saveSettings(Object.fromEntries(SETTINGS_KEYS.filter(k => S.settings[k] !== undefined).map(k => [k, S.settings[k]]))); if (rerender) renderSettings(); }, 700);
+}
+function renderSectionSettings() {
+  const sec = S.settings.sections ||= { ...DEFAULT_SECTIONS };
+  $('secRows').innerHTML = SECTIONS.map(s => `
+    <div class="srow"><div class="nm">${s.name}${s.sub ? `<small>${s.sub}</small>` : ''}</div>
+      <button class="toggle ${sec[s.k] !== false ? 'on' : ''}" data-k="${s.k}" aria-label="${s.name}を表示"></button></div>`).join('');
+  $('secRows').querySelectorAll('.toggle').forEach(b => b.onclick = () => {
+    sec[b.dataset.k] = sec[b.dataset.k] === false;
+    queueSettingsSave();
+    render();
+  });
 }
 
 function renderExSettings() {
@@ -1672,16 +2287,16 @@ function renderTrend() {
 
   $('v-trend').innerHTML = `
     <div class="card wide"><div class="chips" id="trendP" style="margin:0">${Object.entries(TREND_P).map(([k, v]) => `<button data-p="${k}" class="${S.trendP === k ? 'on' : ''}">${v.label}</button>`).join('')}</div></div>
-    <div class="card"><h2><span class="dot" style="background:var(--body)"></span>体重<span class="r tsum">${wSum}</span></h2>
+    ${secOn('body') ? `<div class="card"><h2><span class="dot" style="background:var(--body)"></span>体重<span class="r tsum">${wSum}</span></h2>
       <div class="chips small" id="bodyOpt"><button data-o="fat" style="--c:var(--strength)" class="${S.trendOpt.fat ? 'on' : ''}">体脂肪率</button><button data-o="muscle" style="--c:var(--ride)" class="${S.trendOpt.muscle ? 'on' : ''}">骨格筋率</button></div>
-      ${wPts.length ? '<div class="tchart" id="tc-w"></div>' : '<div class="empty">この期間の記録がありません</div>'}</div>
-    <div class="card"><h2><span class="dot" style="background:var(--bp)"></span>血圧<span class="r tsum">朝 ${bpAvg(am)} · 夜 ${bpAvg(pm)}</span></h2>
+      ${wPts.length ? '<div class="tchart" id="tc-w"></div>' : '<div class="empty">この期間の記録がありません</div>'}</div>` : ''}
+    ${secOn('bp') ? `<div class="card"><h2><span class="dot" style="background:var(--bp)"></span>血圧<span class="r tsum">朝 ${bpAvg(am)} · 夜 ${bpAvg(pm)}</span></h2>
       ${am.length || pm.length ? '<div class="tchart" id="tc-bp"></div>' : '<div class="empty">この期間の記録がありません</div>'}
-      <div class="label">平均値。点線：高血圧の目安 ${ref.high[0]}/${ref.high[1]}、細線：目標 ${ref.goal[0]}/${ref.goal[1]}（設定で変更可）</div></div>
-    <div class="card wide"><h2><span class="dot" style="background:var(--ride)"></span>ライド距離<span class="r tsum">${rs.length}回 · ${Math.round(rs.reduce((n, r) => n + r.distance, 0) / 1000)} km</span></h2>
-      <div class="tchart" id="tc-r"></div><div class="label">${P.bucket === 'day' ? '日ごと' : P.bucket === 'week' ? '週ごと（月曜始まり）' : '月ごと'}の合計</div></div>`;
+      <div class="label">平均値。点線：高血圧の目安 ${ref.high[0]}/${ref.high[1]}、細線：目標 ${ref.goal[0]}/${ref.goal[1]}（設定で変更可）</div></div>` : ''}
+    ${secOn('ride') ? `<div class="card wide"><h2><span class="dot" style="background:var(--ride)"></span>ライド距離<span class="r tsum">${rs.length}回 · ${Math.round(rs.reduce((n, r) => n + r.distance, 0) / 1000)} km</span></h2>
+      <div class="tchart" id="tc-r"></div><div class="label">${P.bucket === 'day' ? '日ごと' : P.bucket === 'week' ? '週ごと（月曜始まり）' : '月ごと'}の合計</div></div>` : ''}`;
   $('trendP').querySelectorAll('button').forEach(b => b.onclick = () => { S.trendP = b.dataset.p; renderTrend(); });
-  $('bodyOpt').querySelectorAll('button').forEach(b => b.onclick = () => { S.trendOpt[b.dataset.o] = !S.trendOpt[b.dataset.o]; renderTrend(); });
+  $('bodyOpt')?.querySelectorAll('button').forEach(b => b.onclick = () => { S.trendOpt[b.dataset.o] = !S.trendOpt[b.dataset.o]; renderTrend(); });
 
   loadScript(LIB.echarts).then(() => {
     if (S.view !== 'trend') return;
@@ -1722,7 +2337,7 @@ function renderTrend() {
           { name:'夜 最低', type:'line', data:pm.map(([d, v]) => [d, v.dia]), symbolSize:4, symbol:'rect', itemStyle:{ color:c2 }, lineStyle:{ type:'dashed', opacity:.6 } },
         ] });
     }
-    {
+    if ($('tc-r')) {
       const ch = echarts.init($('tc-r')); trendCharts.push(ch);
       ch.setOption({ ...base(), legend:{ show:false },
         tooltip:{ ...base().tooltip, formatter: p => `${p[0].name}${P.bucket === 'week' ? '〜' : ''}<br><b>${p[0].value}</b> km` },
@@ -1755,7 +2370,7 @@ applyTheme();
 
 // 日付が変わったら今日に追従（アプリを開きっぱなしの場合）
 let lastToday = todayStr();
-setInterval(() => { const t = todayStr(); if (t !== lastToday) { if (S.date === lastToday) S.date = t; lastToday = t; render(); } }, 60000);
+setInterval(() => { const t = todayStr(); if (t !== lastToday && !S.sheet) { if (S.date === lastToday) S.date = t; lastToday = t; render(); } }, 60000);   // 食事の記録シートを開いている間は日付を動かさない
 
 // PWA
 if ('serviceWorker' in navigator && !USE_EMU) navigator.serviceWorker.register('sw.js').catch(()=>{});
