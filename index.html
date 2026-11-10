@@ -574,8 +574,8 @@ const firebaseConfig = {
   messagingSenderId: "1021262216779",
   appId: "1:1021262216779:web:f266ab39c981c88e7657ce",
 };
-// 食事の写真判定（AI）用：reCAPTCHA v3 のサイトキー（README「AI（食事の写真判定）の初期設定」参照）
-const RECAPTCHA_SITE_KEY = 'YOUR_RECAPTCHA_SITE_KEY';
+// 食事の写真判定（AI）用：App Check（Fraud Defense＝旧 reCAPTCHA Enterprise）のサイトキー（README「AI（食事の写真判定）の初期設定」参照）
+const RECAPTCHA_SITE_KEY = '6LfxLhkuAAAAAAWvPrbhBHJfomBXfDHbG_Sph9Nj';
 // 使うAIモデル（左から順に試す。無料枠の上限などで失敗したら次のモデル）
 const AI_MODELS = ['gemini-3.8-flash', 'gemini-3.5-flash-lite'];
 const FB_VER = '12.19.0';
@@ -1196,7 +1196,7 @@ function getModels() {
       import(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-app-check.js`),
       import(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-ai.js`),
     ]);
-    ac.initializeAppCheck(fbApp, { provider:new ac.ReCaptchaV3Provider(RECAPTCHA_SITE_KEY), isTokenAutoRefreshEnabled:true });
+    ac.initializeAppCheck(fbApp, { provider:new ac.ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY), isTokenAutoRefreshEnabled:true });
     const inst = ai.getAI(fbApp, { backend:new ai.GoogleAIBackend() });
     const responseSchema = mealSchema(ai.Schema);
     return AI_MODELS.map(model => ai.getGenerativeModel(inst, { model, systemInstruction:AI_SYS, generationConfig:{ responseMimeType:'application/json', responseSchema } }));
